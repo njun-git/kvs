@@ -3,7 +3,7 @@ kvs repository
 
 This repository is sample source code using KVS.
 
-To compile these source code, you need install [KVS](http://code.google.com/p/kvs/).
+[KVS : Kyoto Visualization System](http://code.google.com/p/kvs/) is is a multi-platform, open-source C++ library for developing scientific visualization applications.
 
 Blanch
 ------
@@ -35,7 +35,7 @@ To compile source code:
 
 To execute application:
 
-  $ ./(application name)
+    $ ./(application name)
 
 Operation Check
 ------------
