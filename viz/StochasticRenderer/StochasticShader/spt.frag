@@ -94,15 +94,6 @@ void main( void )
     float randf = texture2D( random_texture, random_position ).x;
     if ( randf > lutdata.a ) { discard; return; }
 
-    if ( 255.0 * lutdata.a - floor( 255.0 * lutdata.a ) > randf )
-    {
-        lutdata.a = ( floor( 255.0 * lutdata.a ) + 1.0 ) / 255.0;
-    }
-    else
-    {
-        lutdata.a = floor( 255.0 * lutdata.a ) / 255.0;
-    }
-
     vec3 frag_color = lutdata.xyz / lutdata.a;
 
     // Light position.

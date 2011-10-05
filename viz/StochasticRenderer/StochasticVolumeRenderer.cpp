@@ -298,12 +298,6 @@ void StochasticVolumeRenderer::attachVolumeObject( const kvs::UnstructuredVolume
         kvsMessageError( "Cell type of this volume is not tetrahedral cell." );
         exit(1);
     }
-/*
-    const kvs::Vector3f l( volume->maxObjectCoord() - volume->minObjectCoord() );
-    const float max_edge = kvs::Math::Max( l.x(), l.y(), l.z() ) / 1000;
-    this->setEdgeSize( max_edge );
-    std::cout << max_edge << std::endl;
-*/
 }
 
 void StochasticVolumeRenderer::setNSteps( const size_t nsteps )
@@ -687,9 +681,6 @@ void StochasticVolumeRenderer::setup_shader( const float modelview_matrix[16] )
 {
     float projection_matrix[16]; glGetFloatv( GL_PROJECTION_MATRIX, projection_matrix );
 
-    const float* mat = modelview_matrix;
-    const float scale = sqrtf( mat[0] * mat[0] + mat[1] * mat[1] + mat[2] * mat[2] );
-
     int scramble_count = m_repeat_count++ * 12347;
     size_t random_texture_size = m_random_texture.width();
     float rp_x = ( scramble_count                       ) % random_texture_size;
@@ -707,7 +698,7 @@ void StochasticVolumeRenderer::setup_shader( const float modelview_matrix[16] )
     m_shader_program.setUniformValuef( "screen_scale_inv", 1.0f / m_width, 1.0f / m_height );
 
     m_shader_program.setUniformValuef( "preintegration_scale_offset",
-        ( 1.0 - 1.0 / m_table.sizeDepth() ) / ( m_edge_size * scale ),
+        1.0 - 1.0 / m_table.sizeDepth() / m_edge_size,
         1.0 / ( 2.0 * m_table.sizeDepth() ) );
 
     m_shader_program.setUniformValuei( "preintegration_texture", 0 );
