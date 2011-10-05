@@ -1,17 +1,11 @@
-/*****************************************************************************/
-/**
- *  @file   zooming.vert
- *  @author Naohisa Sakamoto
- */
-/*----------------------------------------------------------------------------
- *
- *  Copyright 2007 Visualization Laboratory, Kyoto University.
- *  All rights reserved.
- *  See http://www.viz.media.kyoto-u.ac.jp/kvs/copyright/ for details.
- *
- *  $Id: zooming.vert 627 2010-10-03 13:56:57Z naohisa.sakamoto $
- */
-/*****************************************************************************/
+//
+//  spt.geom
+//  
+//
+//  Created by Jun Nishimura on 11/4/10.
+//  Copyright 2011 Jun Nishimura. All rights reserved.
+//
+
 #version 120
 #extension GL_EXT_geometry_shader4 : enable
 #extension GL_EXT_gpu_shader4 : enable

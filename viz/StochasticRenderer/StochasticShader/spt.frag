@@ -1,17 +1,10 @@
-/*****************************************************************************/
-/**
- *  @file   zooming.frag
- *  @author Naohisa Sakamoto
- */
-/*----------------------------------------------------------------------------
- *
- *  Copyright 2007 Visualization Laboratory, Kyoto University.
- *  All rights reserved.
- *  See http://www.viz.media.kyoto-u.ac.jp/kvs/copyright/ for details.
- *
- *  $Id: zooming.frag 490 2010-03-22 12:00:41Z naohisa.sakamoto $
- */
-/*****************************************************************************/
+//
+//  spt.frag
+//  
+//
+//  Created by Jun Nishimura on 11/4/10.
+//  Copyright 2011 Jun Nishimura. All rights reserved.
+//
 
 varying vec3 position;
 varying vec3 normal;
@@ -89,11 +82,6 @@ vec3 ShadingBlinnPhong( in Shading shading, in vec3 color, in vec3 L, in vec3 N,
 
 uniform Shading shading;
 
-/*===========================================================================*/
-/**
- *  @brief  Calculates a shaded color of the particle with Lambert shading.
- */
-/*===========================================================================*/
 void main( void )
 {
     vec3 lutcoord = vec3( scalar_front, scalar_back, distance );
