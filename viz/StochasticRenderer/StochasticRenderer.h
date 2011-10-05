@@ -110,7 +110,9 @@ private:
     void create_texture(
         kvs::Texture2D& texture,
         kvs::glew::FrameBufferObject& framebuffer,
-        GLint format,
+        GLint internal_format,
+        GLenum external_format,
+        GLenum external_type,
         GLenum attachment );
 
     void initialize_random_texture( void );

@@ -95,6 +95,11 @@ void StochasticPolygonRenderer::setPolygonOffset( const float polygon_offset )
     m_polygon_offset = polygon_offset;
 }
 
+const StochasticRendererBase::RendererType StochasticPolygonRenderer::rendererType( void ) const
+{
+    return( BaseClass::Polygon );
+}
+
 void StochasticPolygonRenderer::initializeShader( void )
 {
     const std::string vert_code = "StochasticShader/polygon.vert";

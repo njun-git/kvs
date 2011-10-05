@@ -75,6 +75,8 @@ public:
 
 public:
 
+    const RendererType rendererType( void ) const;
+
     void initializeShader( void );
 
     void createVertexBuffer( void );

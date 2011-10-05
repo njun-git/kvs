@@ -10,6 +10,17 @@
 
 #include <kvs/MersenneTwister>
 
+namespace
+{
+    struct SortingByRendererType
+    {
+        bool operator () ( const kvs::glew::StochasticRendererBase* r1, const kvs::glew::StochasticRendererBase* r2 )
+        {
+            return( r1->rendererType() < r2->rendererType() );
+        }
+    };
+}
+
 namespace kvs
 {
 
@@ -77,6 +88,9 @@ void StochasticRenderer::clear( void )
             delete object;
             object = NULL;
         }
+    }
+    for ( size_t i = 0; i < m_renderer_list.size(); i++ )
+    {
         kvs::glew::StochasticRendererBase* renderer = m_renderer_list[i];
         if ( renderer )
         {
@@ -90,8 +104,21 @@ void StochasticRenderer::clear( void )
 
 void StochasticRenderer::registerRenderer( kvs::ObjectBase* object, kvs::glew::StochasticRendererBase* renderer )
 {
-    m_object_list.push_back( object );
-    m_renderer_list.push_back( renderer );
+    bool has_object = false;
+    for ( size_t i = 0; i < m_object_list.size(); i++ )
+    {
+        if ( m_object_list[i] == object ) has_object = true;
+    }
+    if ( !has_object ) m_object_list.push_back( object );
+
+    bool has_renderer = false;
+    for ( size_t i = 0; i < m_renderer_list.size(); i++ )
+    {
+        if ( m_renderer_list[i] == renderer ) has_renderer = true;
+    }
+    if ( !has_renderer ) m_renderer_list.push_back( renderer );
+
+    std::sort( m_renderer_list.begin(), m_renderer_list.end(), ::SortingByRendererType() );
 }
 
 void StochasticRenderer::clearEnsembleBuffer( void )
@@ -182,7 +209,6 @@ void StochasticRenderer::create_image( const kvs::Camera* camera, const kvs::Lig
         for ( size_t i = 0; i < m_renderer_list.size(); i++ )
         {
             m_renderer_list[i]->setRenderSize( m_width, m_height );
-            //m_renderer_list[i]->setRepeatLevel( m_repeat_level );
         }
 
         m_ensemble_buffer.create( m_width, m_height );
@@ -265,8 +291,8 @@ void StochasticRenderer::initialize_framebuffer_texture( void )
     m_framebuffer.create();
     m_framebuffer.bind();
 
-    this->create_texture( m_color_texture, m_framebuffer, GL_RGB8, GL_COLOR_ATTACHMENT0_EXT );
-    this->create_texture( m_depth_texture, m_framebuffer, GL_DEPTH_COMPONENT, GL_DEPTH_ATTACHMENT_EXT );
+    this->create_texture( m_color_texture, m_framebuffer, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, GL_COLOR_ATTACHMENT0_EXT );
+    this->create_texture( m_depth_texture, m_framebuffer, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_ATTACHMENT_EXT );
 
     m_framebuffer.disable();
 
@@ -281,7 +307,9 @@ void StochasticRenderer::initialize_framebuffer_texture( void )
 void StochasticRenderer::create_texture(
     kvs::Texture2D& texture,
     kvs::glew::FrameBufferObject& framebuffer,
-    GLint format,
+    GLint internal_format,
+    GLenum external_format,
+    GLenum external_type,
     GLenum attachment )
 {
     texture.release();
@@ -291,9 +319,7 @@ void StochasticRenderer::create_texture(
     texture.setMagFilter( GL_LINEAR );
     texture.setMinFilter( GL_LINEAR );
 
-    const GLenum external_format = ( format == GL_DEPTH_COMPONENT ) ? GL_DEPTH_COMPONENT : GL_RGB;
-
-    texture.setPixelFormat( format, external_format, GL_UNSIGNED_BYTE );
+    texture.setPixelFormat( internal_format, external_format, external_type );
     texture.create( m_width, m_height );
     {
         GLenum error = glGetError();

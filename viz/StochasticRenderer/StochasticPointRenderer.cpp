@@ -280,6 +280,11 @@ void StochasticPointRenderer::setPointSize( const float point_size )
     m_point_size = point_size;
 }
 
+const StochasticRendererBase::RendererType StochasticPointRenderer::rendererType( void ) const
+{
+    return( BaseClass::Point );
+}
+
 void StochasticPointRenderer::initializeShader( void )
 {
     const std::string vert_code = "StochasticShader/point.vert";

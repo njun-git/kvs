@@ -335,6 +335,11 @@ kvs::TransferFunction& StochasticVolumeRenderer::transferFunction( void )
     return( m_tfunc );
 }
 
+const StochasticRendererBase::RendererType StochasticVolumeRenderer::rendererType( void ) const
+{
+    return( BaseClass::Volume );
+}
+
 void StochasticVolumeRenderer::initializeShader( void )
 {
     const std::string vert_code = "StochasticShader/spt.vert";
@@ -473,10 +478,13 @@ void StochasticVolumeRenderer::drawVertexBuffer( const float modelview_matrix[16
     glActiveTexture(GL_TEXTURE2);    m_decomposition_texture.unbind();  glDisable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE1);    m_random_texture.unbind();         glDisable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE0);    m_table.unbind();                  glDisable(GL_TEXTURE_3D);
+
+    m_repeat_count++;
 }
 
 void StochasticVolumeRenderer::clearEnsembleBuffer( void )
 {
+    m_repeat_count = 0;
 }
 
 void StochasticVolumeRenderer::create_shaders(
@@ -679,9 +687,7 @@ void StochasticVolumeRenderer::create_vertexbuffer_from_volume( void )
 
 void StochasticVolumeRenderer::setup_shader( const float modelview_matrix[16] )
 {
-    float projection_matrix[16]; glGetFloatv( GL_PROJECTION_MATRIX, projection_matrix );
-
-    int scramble_count = m_repeat_count++ * 12347;
+    int scramble_count = m_repeat_count * 12347;
     size_t random_texture_size = m_random_texture.width();
     float rp_x = ( scramble_count                       ) % random_texture_size;
     float rp_y = ( scramble_count / random_texture_size ) % random_texture_size;

@@ -35,6 +35,17 @@ class StochasticRendererBase : public kvs::RendererBase
     kvsModuleCategory( Renderer );
     kvsModuleBaseClass( kvs::RendererBase );
 
+public:
+
+    enum RendererType
+    {
+        Point = 0,
+        Line,
+        Polygon,
+        Volume,
+        Unknown
+    };
+
 protected:
 
     // Renderer image size.
@@ -92,6 +103,8 @@ public:
     const bool isEnabledShading( void ) const;
 
 public:
+
+    virtual const RendererType rendererType( void ) const = 0;
 
     virtual void initializeShader( void ) = 0;
 

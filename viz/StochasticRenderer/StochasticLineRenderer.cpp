@@ -76,6 +76,11 @@ void StochasticLineRenderer::setOpacity( const unsigned char opacity )
     m_line_opacity = static_cast<float>( opacity / 255.0f );
 }
 
+const StochasticRendererBase::RendererType StochasticLineRenderer::rendererType( void ) const
+{
+    return( BaseClass::Line );
+}
+
 void StochasticLineRenderer::initializeShader( void )
 {
     const std::string vert_code = "StochasticShader/line.vert";
