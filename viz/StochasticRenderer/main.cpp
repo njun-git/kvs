@@ -14,13 +14,15 @@
 #include <kvs/UnstructuredVectorToScalar>
 #include <kvs/PolygonImporter>
 #include <kvs/LineImporter>
-#include <kvs/ExternalFaces>
+#include <kvs/PointImporter>
 
 #include "NullObject.h"
 #include "StochasticRenderer.h"
-#include "StochasticPTRenderer.h"
+#include "StochasticVolumeRenderer.h"
 #include "StochasticPolygonRenderer.h"
 #include "StochasticLineRenderer.h"
+#include "StochasticPointRenderer.h"
+
 #include "PolygonToPolygon.h"
 
 class Argument : public kvs::CommandLine
@@ -34,10 +36,11 @@ public:
         add_help_option();
         add_option( "r", "[size_t] Repeat level. ( default : 1 )", 1, false );
 
-        add_option( "v", "[string] kvs::UnstructuredVolumeObject file path. ( optional )", 1, false );
-        add_option( "p", "[string] kvs::PolygonObject file path. ( optional )", 1, false );
-        add_option( "l", "[string] kvs::LineObject file path. ( optional )", 1, false );
-        add_option( "t", "[string] kvs::TransferFunction file path. ( optional )", 1, false );
+        add_option( "volume", "[string] kvs::UnstructuredVolumeObject file path. ( optional )", 1, false );
+        add_option( "point", "[string] kvs::PointObject file path. ( optional )", 1, false );
+        add_option( "polygon", "[string] kvs::PolygonObject file path. ( optional )", 1, false );
+        add_option( "line", "[string] kvs::LineObject file path. ( optional )", 1, false );
+        add_option( "tfunc", "[string] kvs::TransferFunction file path. ( optional )", 1, false );
 
         add_option( "e", "[float]  Edge size of volume. ( default : 1 )", 1, false );
         add_option( "DisableShading", "Disable shading. ( default : eable shading )", 0, false );
@@ -78,9 +81,9 @@ int main( int argc, char** argv )
 
     kvs::NullObject* null = NULL;
 
-    if ( arg.hasOption( "v" ) )
+    if ( arg.hasOption( "volume" ) )
     {
-        const std::string filename = arg.optionValue<std::string>( "v" );
+        const std::string filename = arg.optionValue<std::string>( "volume" );
         kvs::UnstructuredVolumeObject* volume = new kvs::UnstructuredVolumeImporter( filename );
         if ( volume->veclen() == 3 )
         {
@@ -89,28 +92,23 @@ int main( int argc, char** argv )
             volume = volume2;
         }
 
-        kvs::glew::StochasticPTRenderer* spt_renderer = new kvs::glew::StochasticPTRenderer( volume );
-        if ( arg.hasOption( "e" ) ) spt_renderer->setEdgeSize( arg.optionValue<float>( "e" ) );
-        if ( arg.hasOption( "DisableShading" ) )
+        kvs::glew::StochasticVolumeRenderer* volume_renderer = new kvs::glew::StochasticVolumeRenderer( volume );
+        if ( arg.hasOption( "e" ) ) volume_renderer->setEdgeSize( arg.optionValue<float>( "e" ) );
+        if ( arg.hasOption( "DisableShading" ) ) volume_renderer->disableShading();
+        else                                     volume_renderer->setShader( kvs::Shader::BlinnPhong() );
+
+        if ( arg.hasOption( "tfunc" ) )
         {
-            spt_renderer->disableShading();
+            kvs::TransferFunction tfunc( arg.optionValue<std::string>( "tfunc" ) );
+            volume_renderer->setTransferFunction( tfunc );
         }
-        else
-        {
-            spt_renderer->setShader( kvs::Shader::BlinnPhong() );
-        }
-        if ( arg.hasOption( "t" ) )
-        {
-            kvs::TransferFunction tfunc( arg.optionValue<std::string>( "t" ) );
-            spt_renderer->setTransferFunction( tfunc );
-        }
-        renderer->registerRenderer( volume, spt_renderer );
+        renderer->registerRenderer( volume, volume_renderer );
         if ( !null ) null = new kvs::NullObject( volume );
     }
 
-    if ( arg.hasOption( "p" ) )
+    if ( arg.hasOption( "polygon" ) )
     {
-        kvs::PolygonObject* import_polygon = new kvs::PolygonImporter( arg.optionValue<std::string>( "p" ) );
+        kvs::PolygonObject* import_polygon = new kvs::PolygonImporter( arg.optionValue<std::string>( "polygon" ) );
         kvs::PolygonObject* polygon = new kvs::PolygonToPolygon( import_polygon );
         delete import_polygon;
 
@@ -123,15 +121,26 @@ int main( int argc, char** argv )
         if ( !null ) null = new kvs::NullObject( polygon );
     }
 
-    if ( arg.hasOption( "l" ) )
+    if ( arg.hasOption( "line" ) )
     {
-        kvs::LineObject* line = new kvs::LineImporter( arg.optionValue<std::string>( "l" ) );
+        kvs::LineObject* line = new kvs::LineImporter( arg.optionValue<std::string>( "line" ) );
 
         kvs::glew::StochasticLineRenderer* line_renderer = new kvs::glew::StochasticLineRenderer( line );
         line_renderer->setOpacity( 64 );
 
         renderer->registerRenderer( line, line_renderer );
         if ( !null ) null = new kvs::NullObject( line );
+    }
+
+    if ( arg.hasOption( "point" ) )
+    {
+        kvs::PointObject* point = new kvs::PointImporter( arg.optionValue<std::string>( "point" ) );
+
+        kvs::glew::StochasticPointRenderer* point_renderer = new kvs::glew::StochasticPointRenderer( point, repeat_level );
+        point_renderer->setShader( kvs::Shader::BlinnPhong() );
+
+        renderer->registerRenderer( point, point_renderer );
+        if ( !null ) null = new kvs::NullObject( point );
     }
 
     if ( null ) screen.registerObject( null, renderer );

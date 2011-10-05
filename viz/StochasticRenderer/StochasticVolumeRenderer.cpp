@@ -1,12 +1,12 @@
 //
-//  StochasticPTRenderer.cpp
+//  StochasticVolumeRenderer.cpp
 //  
 //
 //  Created by Jun Nishimura on 11/4/10.
 //  Copyright 2011 Jun Nishimura. All rights reserved.
 //
 
-#include "StochasticPTRenderer.h"
+#include "StochasticVolumeRenderer.h"
 
 #include "SPTDecompositionTable.h"
 #include <kvs/TetrahedralCell>
@@ -18,7 +18,7 @@ namespace kvs
 namespace glew
 {
 
-StochasticPTRenderer::Volume::Volume( void ) :
+StochasticVolumeRenderer::Volume::Volume( void ) :
     m_nsteps( 1 ),
     m_nvertices( 0 ),
     m_ncells( 0 ),
@@ -30,12 +30,12 @@ StochasticPTRenderer::Volume::Volume( void ) :
 {
 }
 
-StochasticPTRenderer::Volume::~Volume( void )
+StochasticVolumeRenderer::Volume::~Volume( void )
 {
     this->release();
 }
 
-void StochasticPTRenderer::Volume::release( void )
+void StochasticVolumeRenderer::Volume::release( void )
 {
     if ( m_indices ) { delete[] m_indices; m_indices = NULL; }
     if ( m_coords )  { delete[] m_coords;  m_coords  = NULL; }
@@ -44,117 +44,111 @@ void StochasticPTRenderer::Volume::release( void )
     if ( m_connections ) { delete[] m_connections; m_connections = NULL; }
 }
 
-void StochasticPTRenderer::Volume::create(
+void StochasticVolumeRenderer::Volume::create(
     const size_t nsteps,
     const size_t nvertices,
-    const size_t ncells,
-    const bool has_index )
+    const size_t ncells )
 {
     this->release();
 
     m_nsteps = nsteps;
     m_nvertices = nvertices;
-    m_coords = new StochasticPTRenderer::CoordType [ nvertices * 3 ];
-    m_values = new StochasticPTRenderer::ValueType [ nvertices * m_nsteps ];
-    m_normals = new StochasticPTRenderer::NormalType [ nvertices * 3 ];
-    if ( has_index ) m_indices = new StochasticPTRenderer::IndexType [ nvertices * 2 ];
+    m_coords = new StochasticVolumeRenderer::CoordType [ nvertices * 3 ];
+    m_values = new StochasticVolumeRenderer::ValueType [ nvertices * m_nsteps ];
+    m_normals = new StochasticVolumeRenderer::NormalType [ nvertices * 3 ];
+    m_indices = new StochasticVolumeRenderer::IndexType [ nvertices * 2 ];
 
     m_ncells = ncells;
-    m_connections = new StochasticPTRenderer::ConnectType [ ncells * 4 ];
+    m_connections = new StochasticVolumeRenderer::ConnectType [ ncells * 4 ];
 }
 
-const bool StochasticPTRenderer::Volume::hasIndex( void ) const
-{
-    return( m_indices != NULL );
-}
-
-const size_t StochasticPTRenderer::Volume::nvertices( void ) const
+const size_t StochasticVolumeRenderer::Volume::nvertices( void ) const
 {
     return( m_nvertices );
 }
 
-const size_t StochasticPTRenderer::Volume::ncells( void ) const
+const size_t StochasticVolumeRenderer::Volume::ncells( void ) const
 {
     return( m_ncells );
 }
 
-const size_t StochasticPTRenderer::Volume::byteSizePerVertex( void ) const
+const size_t StochasticVolumeRenderer::Volume::byteSizePerVertex( void ) const
 {
-    const size_t index_size  = this->hasIndex() ? sizeof( StochasticPTRenderer::IndexType ) * 2 : 0;
-    const size_t coord_size  = sizeof( StochasticPTRenderer::CoordType ) * 3;
-    const size_t value_size  = sizeof( StochasticPTRenderer::ValueType ) * m_nsteps;
-    const size_t normal_size = sizeof( StochasticPTRenderer::NormalType ) * 3;
+    const size_t index_size  = sizeof( StochasticVolumeRenderer::IndexType ) * 2;
+    const size_t coord_size  = sizeof( StochasticVolumeRenderer::CoordType ) * 3;
+    const size_t value_size  = sizeof( StochasticVolumeRenderer::ValueType ) * m_nsteps;
+    const size_t normal_size = sizeof( StochasticVolumeRenderer::NormalType ) * 3;
 
     return( index_size + coord_size + value_size + normal_size );
 }
 
-const size_t StochasticPTRenderer::Volume::byteSizeOfVertex( void ) const
+const size_t StochasticVolumeRenderer::Volume::byteSizeOfVertex( void ) const
 {
     return( this->byteSizePerVertex() * m_nvertices );
 }
 
-const size_t StochasticPTRenderer::Volume::byteSizePerCell( void ) const
+const size_t StochasticVolumeRenderer::Volume::byteSizePerCell( void ) const
 {
-    return( sizeof( StochasticPTRenderer::ConnectType ) * 4 );
+    return( sizeof( StochasticVolumeRenderer::ConnectType ) * 4 );
 }
 
-const size_t StochasticPTRenderer::Volume::byteSizeOfCell( void ) const
+const size_t StochasticVolumeRenderer::Volume::byteSizeOfCell( void ) const
 {
     return( this->byteSizePerCell() * m_ncells );
 }
 
-const StochasticPTRenderer::IndexType* StochasticPTRenderer::Volume::indices( void ) const
+const StochasticVolumeRenderer::IndexType* StochasticVolumeRenderer::Volume::indices( void ) const
 {
     return( m_indices );
 }
 
-StochasticPTRenderer::IndexType* StochasticPTRenderer::Volume::indices( void )
+StochasticVolumeRenderer::IndexType* StochasticVolumeRenderer::Volume::indices( void )
 {
     return( m_indices );
 }
 
-const StochasticPTRenderer::CoordType* StochasticPTRenderer::Volume::coords( void ) const
+const StochasticVolumeRenderer::CoordType* StochasticVolumeRenderer::Volume::coords( void ) const
 {
     return( m_coords );
 }
 
-StochasticPTRenderer::CoordType* StochasticPTRenderer::Volume::coords( void )
+StochasticVolumeRenderer::CoordType* StochasticVolumeRenderer::Volume::coords( void )
 {
     return( m_coords );
 }
 
-const StochasticPTRenderer::ValueType* StochasticPTRenderer::Volume::values( void ) const
+const StochasticVolumeRenderer::ValueType* StochasticVolumeRenderer::Volume::values( void ) const
 {
     return( m_values );
 }
 
-StochasticPTRenderer::ValueType* StochasticPTRenderer::Volume::values( void )
+StochasticVolumeRenderer::ValueType* StochasticVolumeRenderer::Volume::values( void )
 {
     return( m_values );
 }
 
-const StochasticPTRenderer::NormalType* StochasticPTRenderer::Volume::normals( void ) const
+const StochasticVolumeRenderer::NormalType* StochasticVolumeRenderer::Volume::normals( void ) const
 {
     return( m_normals );
 }
 
-StochasticPTRenderer::NormalType* StochasticPTRenderer::Volume::normals( void )
+StochasticVolumeRenderer::NormalType* StochasticVolumeRenderer::Volume::normals( void )
 {
     return( m_normals );
 }
 
-const StochasticPTRenderer::ConnectType* StochasticPTRenderer::Volume::connections( void ) const
+const StochasticVolumeRenderer::ConnectType* StochasticVolumeRenderer::Volume::connections( void ) const
 {
     return( m_connections );
 }
 
-StochasticPTRenderer::ConnectType* StochasticPTRenderer::Volume::connections( void )
+StochasticVolumeRenderer::ConnectType* StochasticVolumeRenderer::Volume::connections( void )
 {
     return( m_connections );
 }
 
 
-StochasticPTRenderer::Renderer::Renderer( void ):
+StochasticVolumeRenderer::Renderer::Renderer( void ):
     m_volume( NULL ),
     m_nsteps(1),
     m_nvertices(0),
@@ -168,8 +162,8 @@ StochasticPTRenderer::Renderer::Renderer( void ):
 {
 }
 
-void StochasticPTRenderer::Renderer::set(
-    const StochasticPTRenderer::Volume* volume,
+void StochasticVolumeRenderer::Renderer::set(
+    const StochasticVolumeRenderer::Volume* volume,
     const size_t nsteps,
     const size_t nvertices,
     const size_t ncells,
@@ -184,35 +178,33 @@ void StochasticPTRenderer::Renderer::set(
     m_loc_values = loc_values;
 }
 
-const bool StochasticPTRenderer::Renderer::download(
+const bool StochasticVolumeRenderer::Renderer::download(
     kvs::glew::VertexBufferObject& vbo,
     kvs::glew::IndexBufferObject& ibo )
 {
     if ( m_volume == NULL ) return( false );
 
-    const bool has_index = m_volume->hasIndex();
-
     const size_t size = m_nvertices;  // number of vertices
-    const size_t size_i = has_index ? sizeof(StochasticPTRenderer::IndexType) * 2 * size : 0;
-    const size_t size_c = sizeof(StochasticPTRenderer::CoordType) * 3 * size;
-    const size_t size_v = sizeof(StochasticPTRenderer::ValueType) * m_nsteps * size;
-    const size_t size_n = sizeof(StochasticPTRenderer::NormalType) * 3 * size;
+    const size_t size_i = sizeof(StochasticVolumeRenderer::IndexType) * 2 * size;
+    const size_t size_c = sizeof(StochasticVolumeRenderer::CoordType) * 3 * size;
+    const size_t size_v = sizeof(StochasticVolumeRenderer::ValueType) * m_nsteps * size;
+    const size_t size_n = sizeof(StochasticVolumeRenderer::NormalType) * 3 * size;
     const size_t off_i = 0;
     const size_t off_c = off_i + size_i;
     const size_t off_v = off_c + size_c;
     const size_t off_n = off_v + size_v;
 
-    const StochasticPTRenderer::IndexType* ptr_i = m_volume->indices();
-    const StochasticPTRenderer::CoordType* ptr_c = m_volume->coords();
-    const StochasticPTRenderer::ValueType* ptr_v = m_volume->values();
-    const StochasticPTRenderer::NormalType* ptr_n = m_volume->normals();
+    const StochasticVolumeRenderer::IndexType* ptr_i = m_volume->indices();
+    const StochasticVolumeRenderer::CoordType* ptr_c = m_volume->coords();
+    const StochasticVolumeRenderer::ValueType* ptr_v = m_volume->values();
+    const StochasticVolumeRenderer::NormalType* ptr_n = m_volume->normals();
 
-    if ( has_index ) vbo.download( size_i, ptr_i, off_i );
+    vbo.download( size_i, ptr_i, off_i );
     vbo.download( size_c, ptr_c, off_c );
     vbo.download( size_v, ptr_v, off_v );
     vbo.download( size_n, ptr_n, off_n );
 
-    const StochasticPTRenderer::ConnectType* ptr_conn = m_volume->connections();
+    const StochasticVolumeRenderer::ConnectType* ptr_conn = m_volume->connections();
     ibo.download( m_volume->byteSizeOfCell(), ptr_conn, 0 );
 
     GLenum error = glGetError();
@@ -229,7 +221,7 @@ const bool StochasticPTRenderer::Renderer::download(
     return( true );
 }
 
-void StochasticPTRenderer::Renderer::draw( const size_t step ) const
+void StochasticVolumeRenderer::Renderer::draw( const size_t step ) const
 {
     glEnableClientState( GL_VERTEX_ARRAY );
     glEnableClientState( GL_NORMAL_ARRAY );
@@ -237,13 +229,10 @@ void StochasticPTRenderer::Renderer::draw( const size_t step ) const
     glNormalPointer( GL_BYTE, 0, (char*)(m_off_normal) );
 
     glEnableVertexAttribArray( m_loc_values );
-    glVertexAttribPointer( m_loc_values, 1, GL_FLOAT, GL_FALSE, 0, (char*)( m_off_value + step * sizeof(StochasticPTRenderer::ValueType) * m_nvertices ) );
+    glVertexAttribPointer( m_loc_values, 1, GL_FLOAT, GL_FALSE, 0, (char*)( m_off_value + step * sizeof(StochasticVolumeRenderer::ValueType) * m_nvertices ) );
 
-    if ( m_volume->hasIndex() )
-    {
-        glEnableVertexAttribArray( m_loc_identifier );
-        glVertexAttribPointer( m_loc_identifier, 2, GL_UNSIGNED_SHORT, GL_FALSE, 0, (char*)(m_off_index) );
-    }
+    glEnableVertexAttribArray( m_loc_identifier );
+    glVertexAttribPointer( m_loc_identifier, 2, GL_UNSIGNED_SHORT, GL_FALSE, 0, (char*)(m_off_index) );
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     glDrawElements( GL_LINES_ADJACENCY_EXT, 4 * m_ncells, GL_UNSIGNED_INT, 0 );
@@ -251,20 +240,17 @@ void StochasticPTRenderer::Renderer::draw( const size_t step ) const
     glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
     glDisableVertexAttribArray( m_loc_values );
-    if ( m_volume->hasIndex() )
-    {
-        glDisableVertexAttribArray( m_loc_identifier );
-    }
+    glDisableVertexAttribArray( m_loc_identifier );
 }
 
 
-StochasticPTRenderer::StochasticPTRenderer( void )
+StochasticVolumeRenderer::StochasticVolumeRenderer( void )
 {
     this->initialize();
     BaseClass::setShader( kvs::Shader::Lambert() );
 }
 
-StochasticPTRenderer::StochasticPTRenderer(
+StochasticVolumeRenderer::StochasticVolumeRenderer(
     const kvs::UnstructuredVolumeObject* volume,
     const size_t nsteps )
 {
@@ -274,11 +260,11 @@ StochasticPTRenderer::StochasticPTRenderer(
     BaseClass::setShader( kvs::Shader::Lambert() );
 }
 
-StochasticPTRenderer::~StochasticPTRenderer( void )
+StochasticVolumeRenderer::~StochasticVolumeRenderer( void )
 {
 }
 
-void StochasticPTRenderer::exec(
+void StochasticVolumeRenderer::exec(
     kvs::ObjectBase* object,
     kvs::Camera*     camera,
     kvs::Light*      light )
@@ -287,7 +273,7 @@ void StochasticPTRenderer::exec(
 }
 
 
-void StochasticPTRenderer::initialize( void )
+void StochasticVolumeRenderer::initialize( void )
 {
     BaseClass::initialize();
 
@@ -303,7 +289,7 @@ void StochasticPTRenderer::initialize( void )
     m_step = 0;
 }
 
-void StochasticPTRenderer::attachVolumeObject( const kvs::UnstructuredVolumeObject* volume )
+void StochasticVolumeRenderer::attachVolumeObject( const kvs::UnstructuredVolumeObject* volume )
 {
     m_ref_volume = volume;
 
@@ -320,22 +306,22 @@ void StochasticPTRenderer::attachVolumeObject( const kvs::UnstructuredVolumeObje
 */
 }
 
-void StochasticPTRenderer::setNSteps( const size_t nsteps )
+void StochasticVolumeRenderer::setNSteps( const size_t nsteps )
 {
     m_nsteps = nsteps;
 }
 
-void StochasticPTRenderer::setStep( const size_t step )
+void StochasticVolumeRenderer::setStep( const size_t step )
 {
     if ( step < m_nsteps ) m_step = step;
 }
 
-void StochasticPTRenderer::setEdgeSize( const float edge_size )
+void StochasticVolumeRenderer::setEdgeSize( const float edge_size )
 {
     m_edge_size = edge_size;
 }
 
-void StochasticPTRenderer::setTransferFunction( const kvs::TransferFunction& tfunc )
+void StochasticVolumeRenderer::setTransferFunction( const kvs::TransferFunction& tfunc )
 {
     m_tfunc = tfunc;
 
@@ -345,17 +331,17 @@ void StochasticPTRenderer::setTransferFunction( const kvs::TransferFunction& tfu
     }
 }
 
-const kvs::TransferFunction& StochasticPTRenderer::transferFunction( void ) const
+const kvs::TransferFunction& StochasticVolumeRenderer::transferFunction( void ) const
 {
     return( m_tfunc );
 }
 
-kvs::TransferFunction& StochasticPTRenderer::transferFunction( void )
+kvs::TransferFunction& StochasticVolumeRenderer::transferFunction( void )
 {
     return( m_tfunc );
 }
 
-void StochasticPTRenderer::initializeShader( void )
+void StochasticVolumeRenderer::initializeShader( void )
 {
     const std::string vert_code = "StochasticShader/spt.vert";
     const std::string geom_code = "StochasticShader/spt.geom";
@@ -427,7 +413,7 @@ void StochasticPTRenderer::initializeShader( void )
     this->create_preintegration_table();
 }
 
-void StochasticPTRenderer::createVertexBuffer( void )
+void StochasticVolumeRenderer::createVertexBuffer( void )
 {
     // Extract surfaces.
     const std::type_info& type = m_ref_volume->values().typeInfo()->type();
@@ -458,14 +444,14 @@ void StochasticPTRenderer::createVertexBuffer( void )
     m_renderer->download( m_vbo, m_ibo );
 }
 
-void StochasticPTRenderer::downloadVertexBuffer( void )
+void StochasticVolumeRenderer::downloadVertexBuffer( void )
 {
     m_vbo.bind();
     m_ibo.bind();
     m_renderer->download( m_vbo, m_ibo );
 }
 
-void StochasticPTRenderer::drawVertexBuffer( const float modelview_matrix[16] )
+void StochasticVolumeRenderer::drawVertexBuffer( const float modelview_matrix[16] )
 {
     if ( !m_table.isTexture() )
     {
@@ -495,11 +481,11 @@ void StochasticPTRenderer::drawVertexBuffer( const float modelview_matrix[16] )
     glActiveTexture(GL_TEXTURE0);    m_table.unbind();                  glDisable(GL_TEXTURE_3D);
 }
 
-void StochasticPTRenderer::clearEnsembleBuffer( void )
+void StochasticVolumeRenderer::clearEnsembleBuffer( void )
 {
 }
 
-void StochasticPTRenderer::create_shaders(
+void StochasticVolumeRenderer::create_shaders(
     kvs::glew::ProgramObject& program_object,
     const kvs::glew::ShaderSource& vertex_source,
     const kvs::glew::ShaderSource& geometry_source,
@@ -562,7 +548,7 @@ void StochasticPTRenderer::create_shaders(
     }
 }
 
-void StochasticPTRenderer::initialize_decomposition_texture( void )
+void StochasticVolumeRenderer::initialize_decomposition_texture( void )
 {
     m_decomposition_texture.release();
     m_decomposition_texture.setWrapS( GL_CLAMP_TO_EDGE );
@@ -586,7 +572,7 @@ void StochasticPTRenderer::initialize_decomposition_texture( void )
     m_decomposition_texture.unbind();
 }
 
-void StochasticPTRenderer::create_preintegration_table( void )
+void StochasticVolumeRenderer::create_preintegration_table( void )
 {
     m_table.setTransferFunction( m_tfunc, 0.0f, 1.0f );
     m_table.create( m_edge_size );
@@ -594,7 +580,7 @@ void StochasticPTRenderer::create_preintegration_table( void )
 }
 
 template <typename T>
-void StochasticPTRenderer::create_vertexbuffer_from_volume( void )
+void StochasticVolumeRenderer::create_vertexbuffer_from_volume( void )
 {
     if ( m_volume ) delete m_volume;
     m_volume = new Volume();
@@ -602,7 +588,7 @@ void StochasticPTRenderer::create_vertexbuffer_from_volume( void )
     const size_t nvertices = m_ref_volume->nnodes();
     const size_t ncells = m_ref_volume->ncells();
 
-    m_volume->create( m_nsteps, nvertices, ncells, true );
+    m_volume->create( m_nsteps, nvertices, ncells );
 
     const kvs::Real32* src_coord   = m_ref_volume->coords().pointer();
     const kvs::UInt32* src_connect = m_ref_volume->connections().pointer();
@@ -627,12 +613,9 @@ void StochasticPTRenderer::create_vertexbuffer_from_volume( void )
         *(dst_coords)++ = src_coord[ i * 3 + 1 ];
         *(dst_coords)++ = src_coord[ i * 3 + 2 ];
 
-        if ( dst_indices )
-        {
-            unsigned int index = i * 12347;
-            *(dst_indices)++ = static_cast<IndexType>( index % random_texture_size );
-            *(dst_indices)++ = static_cast<IndexType>( ( index / random_texture_size ) % random_texture_size );
-        }
+        unsigned int index = i * 12347;
+        *(dst_indices)++ = static_cast<IndexType>( index % random_texture_size );
+        *(dst_indices)++ = static_cast<IndexType>( ( index / random_texture_size ) % random_texture_size );
     }
 
     for ( size_t step = 0; step < m_nsteps; step++ )
@@ -700,7 +683,7 @@ void StochasticPTRenderer::create_vertexbuffer_from_volume( void )
     }
 }
 
-void StochasticPTRenderer::setup_shader( const float modelview_matrix[16] )
+void StochasticVolumeRenderer::setup_shader( const float modelview_matrix[16] )
 {
     float projection_matrix[16]; glGetFloatv( GL_PROJECTION_MATRIX, projection_matrix );
 

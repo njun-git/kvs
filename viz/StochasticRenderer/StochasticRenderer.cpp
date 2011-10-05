@@ -182,6 +182,7 @@ void StochasticRenderer::create_image( const kvs::Camera* camera, const kvs::Lig
         for ( size_t i = 0; i < m_renderer_list.size(); i++ )
         {
             m_renderer_list[i]->setRenderSize( m_width, m_height );
+            //m_renderer_list[i]->setRepeatLevel( m_repeat_level );
         }
 
         m_ensemble_buffer.create( m_width, m_height );

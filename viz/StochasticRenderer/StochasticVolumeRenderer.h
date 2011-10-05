@@ -1,13 +1,13 @@
 //
-//  StochasticPTRenderer.h
+//  StochasticVolumeRenderer.h
 //  
 //
 //  Created by Jun Nishimura on 11/4/10.
 //  Copyright 2011 Jun Nishimura. All rights reserved.
 //
 
-#ifndef KVS__GLEW__STOCHASTIC_PT_RENDERER_H_INCLUDE
-#define KVS__GLEW__STOCHASTIC_PT_RENDERER_H_INCLUDE
+#ifndef KVS__GLEW__STOCHASTIC_VOLUME_RENDERER_H_INCLUDE
+#define KVS__GLEW__STOCHASTIC_VOLUME_RENDERER_H_INCLUDE
 
 #include "StochasticRendererBase.h"
 #include "PreIntegrationTable.h"
@@ -26,11 +26,11 @@ namespace kvs
 namespace glew
 {
 
-class StochasticPTRenderer : public kvs::glew::StochasticRendererBase
+class StochasticVolumeRenderer : public kvs::glew::StochasticRendererBase
 {
 
     // Class name.
-    kvsClassName( kvs::glew::StochasticPTRenderer );
+    kvsClassName( kvs::glew::StochasticVolumeRenderer );
 
     // Module information.
     kvsModuleCategory( Renderer );
@@ -79,11 +79,11 @@ protected:
 
 public:
 
-    StochasticPTRenderer( void );
+    StochasticVolumeRenderer( void );
 
-    StochasticPTRenderer( const kvs::UnstructuredVolumeObject* volume, const size_t nsteps = 1 );
+    StochasticVolumeRenderer( const kvs::UnstructuredVolumeObject* volume, const size_t nsteps = 1 );
 
-    virtual ~StochasticPTRenderer( void );
+    virtual ~StochasticVolumeRenderer( void );
 
 public:
 
@@ -140,7 +140,7 @@ private:
 
 };
 
-class StochasticPTRenderer::Volume
+class StochasticVolumeRenderer::Volume
 {
 
 private:
@@ -148,11 +148,11 @@ private:
     size_t m_nsteps;
     size_t m_nvertices; ///< number of vertices
     size_t m_ncells; ///< number of cells
-    StochasticPTRenderer::IndexType* m_indices; ///< index array
-    StochasticPTRenderer::CoordType* m_coords; ///< coordinate value array
-    StochasticPTRenderer::ValueType* m_values; ///< color value array
-    StochasticPTRenderer::NormalType* m_normals; ///< normal array
-    StochasticPTRenderer::ConnectType* m_connections;
+    StochasticVolumeRenderer::IndexType* m_indices; ///< index array
+    StochasticVolumeRenderer::CoordType* m_coords; ///< coordinate value array
+    StochasticVolumeRenderer::ValueType* m_values; ///< color value array
+    StochasticVolumeRenderer::NormalType* m_normals; ///< normal array
+    StochasticVolumeRenderer::ConnectType* m_connections;
 
 public:
 
@@ -164,11 +164,9 @@ public:
 
     void release( void );
 
-    void create( const size_t nsteps, const size_t nvertices, const size_t ncells, const bool has_index );
+    void create( const size_t nsteps, const size_t nvertices, const size_t ncells );
 
 public:
-
-    const bool hasIndex( void ) const;
 
     const size_t nvertices( void ) const;
 
@@ -182,32 +180,32 @@ public:
 
     const size_t byteSizeOfCell( void ) const;
 
-    const StochasticPTRenderer::IndexType* indices( void ) const;
+    const StochasticVolumeRenderer::IndexType* indices( void ) const;
 
-    StochasticPTRenderer::IndexType* indices( void );
+    StochasticVolumeRenderer::IndexType* indices( void );
 
-    const StochasticPTRenderer::CoordType* coords( void ) const;
+    const StochasticVolumeRenderer::CoordType* coords( void ) const;
 
-    StochasticPTRenderer::CoordType* coords( void );
+    StochasticVolumeRenderer::CoordType* coords( void );
 
-    const StochasticPTRenderer::ValueType* values( void ) const;
+    const StochasticVolumeRenderer::ValueType* values( void ) const;
 
-    StochasticPTRenderer::ValueType* values( void );
+    StochasticVolumeRenderer::ValueType* values( void );
 
-    const StochasticPTRenderer::NormalType* normals( void ) const;
+    const StochasticVolumeRenderer::NormalType* normals( void ) const;
 
-    StochasticPTRenderer::NormalType* normals( void );
+    StochasticVolumeRenderer::NormalType* normals( void );
 
-    const StochasticPTRenderer::ConnectType* connections( void ) const;
+    const StochasticVolumeRenderer::ConnectType* connections( void ) const;
 
-    StochasticPTRenderer::ConnectType* connections( void );
+    StochasticVolumeRenderer::ConnectType* connections( void );
 
 };
 
-class StochasticPTRenderer::Renderer
+class StochasticVolumeRenderer::Renderer
 {
 
-    const StochasticPTRenderer::Volume* m_volume; //< pointer to the volume
+    const StochasticVolumeRenderer::Volume* m_volume; //< pointer to the volume
     size_t m_nsteps;
     size_t m_nvertices; ///< number of vertices
     size_t m_ncells; ///< number of cells
@@ -223,7 +221,7 @@ public:
     Renderer( void );
 
     void set(
-        const StochasticPTRenderer::Volume* volume,
+        const StochasticVolumeRenderer::Volume* volume,
         const size_t nsteps,
         const size_t nvertices,
         const size_t ncells,
