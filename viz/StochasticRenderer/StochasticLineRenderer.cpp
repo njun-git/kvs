@@ -54,13 +54,6 @@ void StochasticLineRenderer::initialize( void )
 void StochasticLineRenderer::attachLineObject( const kvs::LineObject* line )
 {
     // Check polygon object for rendering.
-/*
-    if ( line->lineType() != kvs::LineObject::Polyline )
-    {
-        kvsMessageError( "Line type of this line is not polyline." );
-        exit(1);
-    }
-*/
     if ( line->ncolors() != line->nvertices() && line->ncolors() > 1 )
     {
         kvsMessageError( "Color type of this line is not vertex color." );

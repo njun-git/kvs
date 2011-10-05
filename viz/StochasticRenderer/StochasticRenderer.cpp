@@ -8,6 +8,7 @@
 
 #include "StochasticRenderer.h"
 
+#include <algorithm>
 #include <kvs/MersenneTwister>
 
 namespace
