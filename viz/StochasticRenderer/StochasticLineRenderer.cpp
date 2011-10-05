@@ -54,12 +54,13 @@ void StochasticLineRenderer::initialize( void )
 void StochasticLineRenderer::attachLineObject( const kvs::LineObject* line )
 {
     // Check polygon object for rendering.
+/*
     if ( line->lineType() != kvs::LineObject::Polyline )
     {
         kvsMessageError( "Line type of this line is not polyline." );
         exit(1);
     }
-
+*/
     if ( line->ncolors() != line->nvertices() && line->ncolors() > 1 )
     {
         kvsMessageError( "Color type of this line is not vertex color." );
@@ -102,7 +103,9 @@ void StochasticLineRenderer::createVertexBuffer( void )
     const size_t nlines = m_ref_line->nconnections();
 
     const bool has_color    = m_ref_line->ncolors() > 1;
-    const bool has_connect  = m_ref_line->nconnections() > 0;
+    const bool has_connect  = m_ref_line->nconnections() > 0 &&
+        ( m_ref_line->lineType() == kvs::LineObject::Segment ||
+          m_ref_line->lineType() == kvs::LineObject::Uniline );
 
     const size_t size_i = sizeof(IndexType) * 2 * nvertices;
     const size_t size_v = sizeof(CoordType) * 3 * nvertices;
@@ -172,7 +175,9 @@ void StochasticLineRenderer::drawVertexBuffer( const float modelview_matrix[16] 
     const size_t nlines = m_ref_line->nconnections();
 
     const bool has_color    = m_ref_line->ncolors() > 1;
-    const bool has_connect  = m_ref_line->nconnections() > 0;
+    const bool has_connect  = m_ref_line->nconnections() > 0 &&
+        ( m_ref_line->lineType() == kvs::LineObject::Segment ||
+          m_ref_line->lineType() == kvs::LineObject::Uniline );
 
     glPolygonOffset( 1.0, 0.0 );
     glEnable( GL_POLYGON_OFFSET_FILL );
@@ -198,11 +203,44 @@ void StochasticLineRenderer::drawVertexBuffer( const float modelview_matrix[16] 
 
     if ( has_connect )
     {
-        glDrawElements( GL_LINES, 2 * nlines, GL_UNSIGNED_INT, 0 );
+        switch ( m_ref_line->lineType() )
+        {
+            case kvs::LineObject::Uniline:
+            {
+                glDrawElements( GL_LINE_STRIP, nlines, GL_UNSIGNED_INT, 0 );
+                break;
+            }
+            case kvs::LineObject::Segment:
+            {
+                glDrawElements( GL_LINES, 2 * nlines, GL_UNSIGNED_INT, 0 );
+                break;
+            }
+            default: break;
+        }
     }
     else
     {
-        glDrawArrays( GL_LINES, 0, 2 * nlines );
+        switch ( m_ref_line->lineType() )
+        {
+            case kvs::LineObject::Polyline:
+            {
+                size_t count = 0;
+                const unsigned int* p_connect = m_ref_line->connections().pointer();
+                for ( size_t i = 0; i < nlines; i++ )
+                {
+                    const size_t nvertices = p_connect[ i * 2 + 1 ] - p_connect[ i * 2 ] + 1;
+                    glDrawArrays( GL_LINE_STRIP, count, nvertices );
+                    count += nvertices;
+                }
+                break;
+            }
+            default:
+            {
+                const size_t nvertices = m_ref_line->nvertices();
+                glDrawArrays( GL_LINE_STRIP, 0, nvertices );
+                break;
+            }
+        }
     }
 
     if ( has_color )  glDisableClientState( GL_COLOR_ARRAY );
