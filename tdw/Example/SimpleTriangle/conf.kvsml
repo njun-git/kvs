@@ -1,0 +1,12 @@
+<KVSML>
+  <TiledDisplayWall nrenderers="2" resolution="1024 768" fullscreen="0">
+    <Master   socket="127.0.0.1:28980"
+              remote_port="28985"/>
+    <Renderer name="Renderer01"
+              socket="127.0.0.1:28981"
+              origin="0 0" size="1024 384"/>
+    <Renderer name="Renderer02"
+              socket="127.0.0.1:28982"
+              origin="0 384" size="1024 384"/>
+  </TiledDisplayWall>
+</KVSML>
