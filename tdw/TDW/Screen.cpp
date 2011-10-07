@@ -1004,8 +1004,38 @@ void Screen::default_paint_event( void )
     glLoadIdentity();
     glPushMatrix();
 
-    BaseClass::paintFunction();
-    BaseClass::eventHandler()->notify();
+    // Update the camera and light.
+    m_camera->update();
+    m_light->update( m_camera );
+
+    // Set the background color or image.
+    m_background->apply();
+
+    // Rendering the resistered object by using the corresponding renderer.
+    if ( m_object_manager->hasObject() )
+    {
+        BaseClass::eventHandler()->notify();
+        const int size = m_id_manager->size();
+        for ( int index = 0; index < size; index++ )
+        {
+            kvs::IDPair id_pair = (*m_id_manager)[index];
+            kvs::ObjectBase* object = m_object_manager->object( id_pair.first );
+            kvs::RendererBase* renderer = m_renderer_manager->renderer( id_pair.second );
+
+            if ( object->isShown() )
+            {
+                glPushMatrix();
+                object->transform( m_object_manager->objectCenter(), m_object_manager->normalize() );
+                renderer->exec( object, m_camera, m_light );
+                glPopMatrix();
+            }
+        }
+    }
+    else
+    {
+        m_object_manager->applyXform();
+        BaseClass::eventHandler()->notify();
+    }
 
     glPopMatrix();
 
