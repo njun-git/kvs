@@ -31,6 +31,7 @@
 #include "Camera.h"
 #include "MasterMessageSender.h"
 #include "RendererPaintEvent.h"
+#include "MasterReceiver.h"
 #include <kvs/TCPBarrier>
 #include <kvs/TCPBarrierServer>
 
@@ -40,6 +41,7 @@ namespace { kvs::tdw::Screen* context[::MaxNumberOfScreens]; }
 
 namespace { kvs::TCPBarrierServer* BarrierServer = 0; }
 namespace { kvs::tdw::MasterMessageSender* MasterSender = 0; }
+namespace { kvs::tdw::MasterReceiver* MasterReceiver = 0; }
 namespace { kvs::tdw::RendererPaintEvent* RendererEvent = 0; }
 
 // Static function and class.
@@ -544,6 +546,10 @@ void Screen::initializeEvent( void )
 
         if ( kvs::tdw::Configuration::HasRemote() )
         {
+            ::MasterReceiver = new kvs::tdw::MasterReceiver( this );
+            ::MasterReceiver->attachEventHandler( BaseClass::eventHandler() );
+            ::MasterReceiver->attachMasterMessageSender( MasterSender );
+            ::MasterReceiver->start();
         }
 
         MasterSender->sendPaintEvent( this );
