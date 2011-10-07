@@ -1,75 +1,32 @@
-kvs repository
-=============
+## About kvs Repository
 
-This repository is sample source code using KVS.
+This repository is a collection of source codes using kvs.
 
-[KVS : Kyoto Visualization System](http://code.google.com/p/kvs/) is is a multi-platform, open-source C++ library for developing scientific visualization applications.
+> [Kyoto Visualization System (KVS)](http://code.google.com/p/kvs/) is a multi-platform, open-source C++ library for developing scientific visualization applications. KVS provides various classes and interfaces , such as isosurace extraction, streamlines and volume rendering, to visualize medical data obtained by computerized tomography or magnetic resonance imaging, numerical data from computational fluid dynamics and so on. KVS also provides some viewing classes for the VR display system, such as CAVE immersive display and tiled display system.  
 
-Folders
-------
+## Directories
+### [OpenGL : opengl](https://github.com/njun-git/kvs/wiki/OpenGL)
 
-### opengl
+'opengl' directory consists of kvs examples using OpenGL.
 
-OpenGL example using KVS.
+### [GLEW : glew](https://github.com/njun-git/kvs/wiki/GLEW)
 
-You need to install [KVS](http://code.google.com/p/kvs/).
+'glew' directory consists of kvs examples using OpenGL and GLSL.  
+It requires the installation of [GLEW (The OpenGL Extension Wrangler Library)](http://glew.sourceforge.net/) to compile and execute programs.
 
-### glew
+### [Visualization : viz](https://github.com/njun-git/kvs/wiki/Visualization)
 
-GLSL example using KVS.
+'viz' directory consists of kvs source codes for visualization.  
+It also requires the installation of GLEW to compile and execute programs.
 
-You need to install [glew](http://glew.sourceforge.net/), and reinstall [KVS](http://code.google.com/p/kvs/) with KVS_SUPPORT_GLEW=1 in kvs.conf.
+### [Tiled Display Wall : tdw](https://github.com/njun-git/kvs/wiki/Tiled-Display-Wall)
 
-### tdw
+'tdw' directory consists of a library source and expamples for tiled display wall environments.  
+Some examples require the installation of GLEW.
 
-Library for tiled display wall using KVS.
+## System Requirements
 
-To install library:
+* Mac
+* Linux
 
-    $ cd tdw/TDW
-    $ kvsmake -G
-    $ kvsmake lib
-
-libTDW.a is created. This directory is include path and also library path.
-
-To compile example:
-
-    $ cd tdw/Example/SimpleTriangle
-    $ kvsmake -G
-    $ kvsmake
-
-To execute example application in local:
-
-    $ ./run_local.sh
-
-You need to install [KVS](http://code.google.com/p/kvs/).
-The supported platform are only Mac and Linux.
-
-### viz
-
-Visualization example using KVS.
-
-You need to install [glew](http://glew.sourceforge.net/), and reinstall [KVS](http://code.google.com/p/kvs/) with KVS_SUPPORT_GLEW=1 in kvs.conf.
-
-Usage
------
-
-### Compile source code
-
-To compile source code:
-
-    $ cd (each source path)
-    $ kvsmake -G
-    $ kvsmake
-
-### Execution
-
-To execute application:
-
-    $ ./(application name)
-
-Operation Check
-------------
-
-These source codes are only checked in Mac OS and Ubuntu.
-
+*These programs probably run in Windows system, but not checked.
