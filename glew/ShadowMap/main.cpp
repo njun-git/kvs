@@ -91,6 +91,7 @@ int main( int argc, char** argv )
     Argument arg( argc, argv );
     kvs::glut::Application app( argc, argv );
     kvs::glut::Screen screen( &app );
+    screen.setTitle( "kvs::glew::ShadowMapRenderer" );
 
     // Add user key press event.
     KeyPressEvent key_press_event;
