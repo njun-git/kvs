@@ -92,7 +92,7 @@ int main( int argc, char** argv )
 
     screen.show();
 
-    //if ( kvs::tdw::Application::IsRenderer() )
+    if ( kvs::tdw::Application::IsRenderer() )
     {
         const std::string filename = arg.value<std::string>( );
         volume = new kvs::StructuredVolumeImporter( filename );
