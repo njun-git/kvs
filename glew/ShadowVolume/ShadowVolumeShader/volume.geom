@@ -10,7 +10,7 @@
 #extension GL_EXT_geometry_shader4 : enable
 #extension GL_EXT_gpu_shader4 : enable
 
-varying in vec4 position_in[3];
+varying in vec4 position_in[2];
 
 void emit_new_vertex( const in vec4 new_position  )
 {
