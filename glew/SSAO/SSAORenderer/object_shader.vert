@@ -1,5 +1,5 @@
 //
-//  phong_tesssellation.vert
+//  object_shader.vert
 //  
 //
 //  Created by Jun Nishimura on 11/22/9.

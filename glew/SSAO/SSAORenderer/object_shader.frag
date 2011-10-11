@@ -1,5 +1,5 @@
 //
-//  phong_tesssellation.frag
+//  object_shader.frag
 //  
 //
 //  Created by Jun Nishimura on 11/22/9.
