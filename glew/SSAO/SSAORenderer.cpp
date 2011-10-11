@@ -63,11 +63,17 @@ void SSAORenderer::attachPolygonObject( const kvs::PolygonObject* polygon )
         exit(1);
     }
 
-    if ( polygon->nnormals() != polygon->nvertices() && polygon->nnormals() > 0 ||
+    if ( ( polygon->nnormals() != polygon->nvertices() && polygon->nnormals() ) > 0 ||
          polygon->normalType() != kvs::PolygonObject::VertexNormal ||
          polygon->nnormals() == 0 )
     {
         kvsMessageError( "Normal type of this polygon is not supported." );
+        exit(1);
+    }
+
+    if ( polygon->nconnections() == 0 )
+    {
+        kvsMessageError( "Connectons of polygon are required." );
         exit(1);
     }
 
