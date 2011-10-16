@@ -22,7 +22,7 @@ It also requires the installation of GLEW to compile and execute programs.
 ### [OpenCL : opencl](https://github.com/njun-git/kvs/wiki/OpenCL)
 
 'opencl' directory consists of a library source and expamples for OpenCL.  
-It requires the installation of OpenCL.
+It requires the installation of [OpenCL](http://www.khronos.org/opencl/).
 
 ### [Tiled Display Wall : tdw](https://github.com/njun-git/kvs/wiki/Tiled-Display-Wall)
 
