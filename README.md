@@ -19,6 +19,11 @@ It requires the installation of [GLEW (The OpenGL Extension Wrangler Library)](h
 'viz' directory consists of kvs source codes for visualization.  
 It also requires the installation of GLEW to compile and execute programs.
 
+### [OpenCL : opencl](https://github.com/njun-git/kvs/wiki/OpenCL)
+
+'opencl' directory consists of a library source and expamples for OpenCL.  
+It requires the installation of OpenCL.
+
 ### [Tiled Display Wall : tdw](https://github.com/njun-git/kvs/wiki/Tiled-Display-Wall)
 
 'tdw' directory consists of a library source and expamples for tiled display wall environments.  
