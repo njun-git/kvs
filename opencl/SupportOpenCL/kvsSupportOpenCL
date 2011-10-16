@@ -1,0 +1,10 @@
+#include <kvs/cl/OpenCL.h>
+#include <kvs/cl/ErrorString.h>
+#include <kvs/cl/Platform.h>
+#include <kvs/cl/Device.h>
+#include <kvs/cl/Context.h>
+#include <kvs/cl/CommandQueue.h>
+#include <kvs/cl/KernelSource.h>
+#include <kvs/cl/KernelObject.h>
+#include <kvs/cl/ProgramObject.h>
+#include <kvs/cl/BufferObject.h>
