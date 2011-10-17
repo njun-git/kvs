@@ -7,8 +7,8 @@
  *
  */
 
-#include "Application.h"
-#include "Screen.h"
+#include <kvs/tdw/Application>
+#include <kvs/tdw/Screen>
 
 class PaintEvent : public kvs::PaintEventListener
 {
