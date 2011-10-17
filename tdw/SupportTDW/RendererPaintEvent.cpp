@@ -66,35 +66,42 @@ void RendererPaintEvent::update( void )
 
     if ( !m_messages.empty() )
     {
-        kvs::MessageBlock message = m_messages.front();
-
-        kvs::tdw::MessageConverter converter;
-        const std::string type = converter.messageType( message );
-        kvs::EventBase* event = NULL;
-        if ( type == KVS_TDW_PAINT_EVENT )      converter.applyPaintEvent( screen(), message );
-        else if ( type == KVS_TDW_KEY_EVENT )   event = converter.keyEvent( message );
-        else if ( type == KVS_TDW_TIMER_ENENT ) event = converter.timerEvent( message );
-
-        std::list<kvs::EventListener*>::iterator listener = m_listeners.begin();
-        std::list<kvs::EventListener*>::iterator end = m_listeners.end();
-
-        while ( listener != end )
+        std::list<kvs::MessageBlock>::iterator message_itr = m_messages.begin();
+        std::list<kvs::MessageBlock>::iterator message_end = m_messages.end();
+        while ( message_itr != message_end )
         {
-            if ( (*listener)->eventType() & kvs::EventBase::PaintEvent )
-            {
-                (*listener)->onEvent();
-            }
-            else if ( event )
-            {
-                if ( (*listener)->eventType() & event->type() )
-                {
-                    (*listener)->onEvent( event );
-                }
-            }
+            kvs::MessageBlock message = (*message_itr);
 
-            ++listener;
+            kvs::tdw::MessageConverter converter;
+            const std::string type = converter.messageType( message );
+            kvs::EventBase* event = NULL;
+            if ( type == KVS_TDW_PAINT_EVENT )      converter.applyPaintEvent( screen(), message );
+            else if ( type == KVS_TDW_KEY_EVENT )   event = converter.keyEvent( message );
+            else if ( type == KVS_TDW_TIMER_ENENT ) event = converter.timerEvent( message );
+
+            std::list<kvs::EventListener*>::iterator listener = m_listeners.begin();
+            std::list<kvs::EventListener*>::iterator end = m_listeners.end();
+
+            while ( listener != end )
+            {
+                if ( (*listener)->eventType() & kvs::EventBase::PaintEvent )
+                {
+                    (*listener)->onEvent();
+                }
+                else if ( event )
+                {
+                    if ( (*listener)->eventType() & event->type() )
+                    {
+                        (*listener)->onEvent( event );
+                    }
+                }
+
+                ++listener;
+            }
+            if ( event ) delete event;
+            message_itr++;
         }
-        if ( event ) delete event;
+        this->clearMessage();
     }
 
     screen()->redraw();

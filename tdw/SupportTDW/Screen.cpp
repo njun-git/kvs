@@ -573,8 +573,6 @@ void Screen::paintEvent( void )
         barrier.wait();
 
         glutSwapBuffers();
-
-        RendererEvent->clearMessage();
     }
 }
 
