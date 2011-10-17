@@ -85,6 +85,10 @@ public:
 
     const std::string driverVersion( const size_t index = 0 ) const;
 
+    const DeviceType type( const size_t index = 0 ) const;
+
+    const std::string typeString( const size_t index = 0 ) const;
+
 public:
 
     const bool isAvailable( const size_t index = 0 ) const;

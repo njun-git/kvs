@@ -127,6 +127,34 @@ const std::string Device::driverVersion( const size_t index ) const
     return( this->get_device_info( index, CL_DRIVER_VERSION ) );
 }
 
+const Device::DeviceType Device::type( const size_t index ) const
+{
+    KVS_ASSERT( index < static_cast<size_t>( m_ndevices ) );
+
+    cl_device_type type;
+    cl_int result = clGetDeviceInfo( m_devices[index], CL_DEVICE_TYPE, sizeof(type), &type, NULL );
+    if ( result != CL_SUCCESS )
+    {
+        kvsMessageError( "OpenCL; %s.", kvs::cl::ErrorString( result ) );
+    }
+    return( DeviceType( type ) );
+}
+
+const std::string Device::typeString( const size_t index ) const
+{
+    DeviceType type = this->type( index );
+    switch ( type )
+    {
+        case CPU: return( std::string( "CPU" ) ); break;
+        case GPU: return( std::string( "GPU" ) ); break;
+        case Accelerator: return( std::string( "Accelerator" ) ); break;
+        case All: return( std::string( "All" ) ); break;
+
+        default: break;
+    }
+    return( std::string( "Default" ) );
+}
+
 const bool Device::isAvailable( const size_t index ) const
 {
     return( this->get_device_info_bool( index, CL_DEVICE_AVAILABLE ) );
