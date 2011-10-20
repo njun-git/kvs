@@ -26,10 +26,10 @@ Context::Context( void ) :
 {
 }
 
-Context::Context( const kvs::cl::Device& device ) :
+Context::Context( const kvs::cl::Device& device, const bool use_gl_context ) :
     m_is_created( false )
 {
-    this->create( device );
+    this->create( device, use_gl_context );
 }
 
 Context::~Context( void )
