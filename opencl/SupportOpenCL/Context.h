@@ -37,7 +37,7 @@ public:
 
     Context( void );
 
-    Context( const kvs::cl::Device& device );
+    Context( const kvs::cl::Device& device, const bool use_gl_context );
 
     virtual ~Context( void );
 
@@ -49,7 +49,7 @@ public:
 
 public:
 
-    void create( const kvs::cl::Device& device, const bool use_gl_context = false );
+    void create( const kvs::cl::Device& device );
 
     void release( void );
 

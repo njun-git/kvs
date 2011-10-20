@@ -56,17 +56,13 @@ void Context::create( const kvs::cl::Device& device, const bool use_gl_context )
     }
 
 #ifdef KVS_PLATFORM_MACOSX
-    cl_context_properties* properties;
+    cl_context_properties* properties = NULL;
     if ( use_gl_context )
     {
         properties = new cl_context_properties[3];
         properties[0] = CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE;
         properties[1] = (cl_context_properties)CGLGetShareGroup(CGLGetCurrentContext());
         properties[2] = 0;
-    }
-    else
-    {
-        properties = NULL;
     }
 #else
     cl_context_properties* properties = NULL;
