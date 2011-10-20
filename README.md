@@ -24,6 +24,11 @@ It also requires the installation of GLEW to compile and execute programs.
 'opencl' directory consists of a library source and expamples for OpenCL.  
 It requires the installation of [OpenCL](http://www.khronos.org/opencl/).
 
+### [OpenNI : openni](https://github.com/njun-git/kvs/wiki/OpenNI)
+
+'openni' directory consists of a library source and expamples for OpenNI.  
+It requires the installation of [OpenNI, PrimeSense Sensor and NITE](http://75.98.78.94/).
+
 ### [Tiled Display Wall : tdw](https://github.com/njun-git/kvs/wiki/Tiled-Display-Wall)
 
 'tdw' directory consists of a library source and expamples for tiled display wall environments.  
