@@ -11,9 +11,11 @@
 
 #include <string>
 #include <kvs/ClassName>
+#include <kvs/Vector3>
 
 #include "ProgramObject.h"
 #include "CommandQueue.h"
+#include "BufferObject.h"
 
 namespace kvs
 {
@@ -63,6 +65,18 @@ public:
         const size_t index,
         const size_t size,
         const void* value );
+
+    void setArgument(
+        const size_t index,
+        const kvs::cl::BufferObject& buffer );
+
+    void setArgument( const size_t index, const int value );
+    void setArgument( const size_t index, const unsigned int value );
+    void setArgument( const size_t index, const float value );
+
+    void setArgument( const size_t index, const kvs::Vector3i& vec3 );
+    void setArgument( const size_t index, const kvs::Vector3ui& vec3 );
+    void setArgument( const size_t index, const kvs::Vector3f& vec3 );
 
     void run(
         kvs::cl::CommandQueue& queue,

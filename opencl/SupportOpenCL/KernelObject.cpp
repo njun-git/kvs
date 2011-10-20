@@ -93,6 +93,55 @@ void KernelObject::setArgument(
     }
 }
 
+void KernelObject::setArgument(
+    const size_t index,
+    const kvs::cl::BufferObject& buffer )
+{
+    this->setArgument( index, sizeof(kvs::cl::CLMemory), &buffer.memory() );
+}
+
+void KernelObject::setArgument( const size_t index, const int value )
+{
+    this->setArgument( index, sizeof(int), &value );
+}
+
+void KernelObject::setArgument( const size_t index, const unsigned int value )
+{
+    this->setArgument( index, sizeof(short), &value );
+}
+
+void KernelObject::setArgument( const size_t index, const float value )
+{
+    this->setArgument( index, sizeof(float), &value );
+}
+
+void KernelObject::setArgument( const size_t index, const kvs::Vector3i& vec3 )
+{
+    int values[3];
+    values[0] = vec3[0];
+    values[1] = vec3[1];
+    values[2] = vec3[2];
+    this->setArgument( index, sizeof(int) * 3, values );
+}
+
+void KernelObject::setArgument( const size_t index, const kvs::Vector3ui& vec3 )
+{
+    unsigned int values[3];
+    values[0] = vec3[0];
+    values[1] = vec3[1];
+    values[2] = vec3[2];
+    this->setArgument( index, sizeof(unsigned int) * 3, values );
+}
+
+void KernelObject::setArgument( const size_t index, const kvs::Vector3f& vec3 )
+{
+    float values[3];
+    values[0] = vec3[0];
+    values[1] = vec3[1];
+    values[2] = vec3[2];
+    this->setArgument( index, sizeof(float) * 3, values );
+}
+
 void KernelObject::run(
     kvs::cl::CommandQueue& queue,
     const size_t work_size_dim,
