@@ -1,0 +1,12 @@
+#include <kvs/ni/OpenNI.h>
+#include <kvs/ni/Context.h>
+#include <kvs/ni/GeneratorBase.h>
+#include <kvs/ni/DepthGenerator.h>
+#include <kvs/ni/ImageGenerator.h>
+#include <kvs/ni/GestureGenerator.h>
+#include <kvs/ni/HandsGenerator.h>
+#include <kvs/ni/UserGenerator.h>
+#include <kvs/ni/GestureEventListener.h>
+#include <kvs/ni/HandEventListener.h>
+#include <kvs/ni/UserEventListener.h>
+#include <kvs/ni/PointCloudObject.h>
