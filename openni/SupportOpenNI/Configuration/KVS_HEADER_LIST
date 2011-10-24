@@ -6,7 +6,12 @@ ImageGenerator
 GestureGenerator
 HandsGenerator
 UserGenerator
+Skeleton
+PoseDetection
 GestureEventListener
 HandEventListener
 UserEventListener
+SkeletonEventListener
+PoseDetectionEventListener
 PointCloudObject
+SkeletonPolygonObject

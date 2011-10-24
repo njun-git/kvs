@@ -15,6 +15,8 @@
 
 #include "GeneratorBase.h"
 #include "UserEventListener.h"
+#include "Skeleton.h"
+#include "PoseDetection.h"
 
 namespace kvs
 {
@@ -39,6 +41,9 @@ protected:
     NewUserList         m_new_list;
     LostUserList        m_lost_list;
 
+    kvs::ni::Skeleton       m_skeleton;
+    kvs::ni::PoseDetection  m_pose;
+
 public:
 
     UserGenerator( void );
@@ -52,6 +57,10 @@ public:
 public:
 
     xn::UserGenerator& generator( void );
+
+    kvs::ni::Skeleton& skeleton( void );
+
+    kvs::ni::PoseDetection& pose( void );
 
     const unsigned short nusers( void );
 

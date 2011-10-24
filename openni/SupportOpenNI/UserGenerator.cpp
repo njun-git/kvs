@@ -74,14 +74,30 @@ const bool UserGenerator::create( kvs::ni::Context& context )
             return( false );
         }
     }
-
     m_is_created = true;
-    return( true );
+
+    m_skeleton.attachUserGenerator( this );
+    m_skeleton.initialize();
+
+    m_pose.attachUserGenerator( this );
+    m_pose.initialize();
+
+    return( m_is_created );
 }
 
 xn::UserGenerator& UserGenerator::generator( void )
 {
     return( m_generator );
+}
+
+kvs::ni::Skeleton& UserGenerator::skeleton( void )
+{
+    return( m_skeleton );
+}
+
+kvs::ni::PoseDetection& UserGenerator::pose( void )
+{
+    return( m_pose );
 }
 
 const unsigned short UserGenerator::nusers( void )
@@ -103,8 +119,8 @@ const kvs::ValueArray<unsigned int> UserGenerator::users( void )
         return( kvs::ValueArray<unsigned int>( 0 ) );
     }
 
-    XnUInt16  nusers;
-    XnUserID* users;
+    XnUInt16 nusers = 15;
+    XnUserID users[15];
 
     XnStatus status = m_generator.GetUsers( users, nusers );
     if ( status != XN_STATUS_OK )
@@ -115,7 +131,7 @@ const kvs::ValueArray<unsigned int> UserGenerator::users( void )
         return( kvs::ValueArray<unsigned int>( 0 ) );
     }
 
-    return( kvs::ValueArray<unsigned int>( users, nusers ) );
+    return( kvs::ValueArray<unsigned int>( static_cast<unsigned int*>( users ), static_cast<size_t>( nusers ) ) );
 }
 
 const kvs::Vector3f UserGenerator::centerOfMass( const unsigned int user )

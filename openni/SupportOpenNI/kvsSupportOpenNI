@@ -6,7 +6,12 @@
 #include <kvs/ni/GestureGenerator.h>
 #include <kvs/ni/HandsGenerator.h>
 #include <kvs/ni/UserGenerator.h>
+#include <kvs/ni/Skeleton.h>
+#include <kvs/ni/PoseDetection.h>
 #include <kvs/ni/GestureEventListener.h>
 #include <kvs/ni/HandEventListener.h>
 #include <kvs/ni/UserEventListener.h>
+#include <kvs/ni/SkeletonEventListener.h>
+#include <kvs/ni/PoseDetectionEventListener.h>
 #include <kvs/ni/PointCloudObject.h>
+#include <kvs/ni/SkeletonPolygonObject.h>
