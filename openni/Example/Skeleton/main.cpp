@@ -13,6 +13,8 @@
 #include <kvs/ni/Skeleton>
 #include <kvs/ni/PointCloudObject>
 #include <kvs/ni/SkeletonPolygonObject>
+#include <kvs/ni/TextureObject>
+#include <kvs/ni/TextureRenderer>
 
 #include <kvs/glut/Application>
 #include <kvs/glut/Screen>
@@ -25,6 +27,8 @@ kvs::ni::DepthGenerator         g_depth;
 kvs::ni::UserGenerator          g_user;
 kvs::ni::PointCloudObject*      g_cloud = NULL;
 kvs::ni::SkeletonPolygonObject* g_skeleton = NULL;
+kvs::ni::TextureObject*         g_texture = NULL;
+kvs::ni::TextureRenderer*       g_renderer = NULL;
 
 class Argument : public kvs::CommandLine
 {
@@ -87,6 +91,7 @@ class TimerEvent : public kvs::TimerEventListener
         g_context.update( g_user );
         if ( g_cloud ) g_cloud->update( g_depth );
         if ( g_skeleton ) g_skeleton->update( g_depth, g_user );
+        if ( g_texture ) g_texture->update( g_depth, g_user );
 
         screen()->redraw();
     }
@@ -131,6 +136,12 @@ int main( int argc, char** argv )
         g_cloud->setColor( kvs::RGBColor( 192, 192, 192 ) );
         screen.registerObject( g_cloud );
     }
+
+    g_texture = new kvs::ni::TextureObject();
+    g_renderer = new kvs::ni::TextureRenderer();
+    g_renderer->setType( kvs::ni::TextureRenderer::RightBottom );
+    g_renderer->setScale( 0.3f );
+    screen.registerObject( g_texture, g_renderer );
 
     g_skeleton = new kvs::ni::SkeletonPolygonObject();
     screen.registerObject( g_skeleton );

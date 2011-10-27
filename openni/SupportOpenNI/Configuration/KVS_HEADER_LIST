@@ -16,3 +16,5 @@ PoseDetectionEventListener
 PointCloudObject
 SkeletonPolygonObject
 ScreenController
+TextureObject
+TextureRenderer

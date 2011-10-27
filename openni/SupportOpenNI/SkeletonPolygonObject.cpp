@@ -194,20 +194,24 @@ void SkeletonPolygonObject::add_octahedron_of_joint(
     const float size )
 {
     const size_t start_index = m_tmp_coords.size() / 3;
+    kvs::Matrix33f joint_matrix = user.skeleton().jointOrientation( index, joint ).orientation();
+    if ( kvs::Math::IsZero( joint_matrix.trace() ) ) joint_matrix.identity();
     const kvs::Vector3f joint_position = this->vertex_of_joint( index, joint, depth, user );
     for ( size_t i = 0; i < 6; i++ )
     {
-        m_tmp_coords.push_back( size * kvs::ni::octahedron::coords[i][0] + joint_position.x() );
-        m_tmp_coords.push_back( size * kvs::ni::octahedron::coords[i][1] + joint_position.y() );
-        m_tmp_coords.push_back( size * kvs::ni::octahedron::coords[i][2] + joint_position.z() );
+        const kvs::Vector3f oct_vertex = kvs::Vector3f( kvs::ni::octahedron::coords[i] ) * joint_matrix;
+        m_tmp_coords.push_back( size * oct_vertex.x() + joint_position.x() );
+        m_tmp_coords.push_back( size * oct_vertex.y() + joint_position.y() );
+        m_tmp_coords.push_back( size * oct_vertex.z() + joint_position.z() );
     }
 
     for ( size_t i = 0; i < 8; i++ )
     {
+        const kvs::Vector3f oct_normal = kvs::Vector3f( kvs::ni::octahedron::normals[i] ) * joint_matrix;
         for ( size_t j = 0; j < 3; j++ )
         {
             m_tmp_connections.push_back( start_index + kvs::ni::octahedron::connections[i][j] );
-            m_tmp_normals.push_back( kvs::ni::octahedron::normals[i][j] );
+            m_tmp_normals.push_back( oct_normal[j] );
         }
         m_tmp_colors.push_back( color.r() );
         m_tmp_colors.push_back( color.g() );

@@ -14,12 +14,12 @@
 #include <kvs/ni/PointCloudObject>
 #include <kvs/ni/SkeletonPolygonObject>
 #include <kvs/ni/ScreenController>
+#include <kvs/ni/TextureObject>
+#include <kvs/ni/TextureRenderer>
 
 #include <kvs/glut/Application>
 #include <kvs/glut/Screen>
 #include <kvs/glut/Timer>
-
-#include <kvs/CommandLine>
 
 kvs::ni::Context                g_context;
 kvs::ni::DepthGenerator         g_depth;
@@ -27,22 +27,8 @@ kvs::ni::UserGenerator          g_user;
 kvs::ni::PointCloudObject*      g_cloud = NULL;
 kvs::ni::SkeletonPolygonObject* g_skeleton = NULL;
 kvs::ni::ScreenController*      g_controller = NULL;
-
-class Argument : public kvs::CommandLine
-{
-
-public:
-
-    Argument( int argc, char** argv ) :
-        CommandLine( argc, argv )
-    {
-        add_help_option();
-        add_option( "PointCloud", "Show point cloud. ( default : none )", 0, false );
-
-        if( !this->parse() ) exit( EXIT_FAILURE );
-    }
-
-};
+kvs::ni::TextureObject*         g_texture = NULL;
+kvs::ni::TextureRenderer*       g_renderer = NULL;
 
 class NewUser : public kvs::ni::NewUserEventListener
 {
@@ -70,12 +56,12 @@ class CalibrationEnd : public kvs::ni::CalibrationEndEventListener
     {
         if ( is_success )
         {
-            std::cout << "Calibration end" << std::endl;
+            std::cout << "Calibration success." << std::endl;
             g_user.skeleton().startTracking( user );
         }
         else
         {
-            std::cout << "Calibration fail" << std::endl;
+            std::cout << "Calibration fail." << std::endl;
             g_user.skeleton().requestCalibration( user, true );
         }
     }
@@ -89,6 +75,7 @@ class TimerEvent : public kvs::TimerEventListener
         g_context.update( g_user );
         if ( g_cloud ) g_cloud->update( g_depth );
         if ( g_skeleton ) g_skeleton->update( g_depth, g_user );
+        if ( g_texture ) g_texture->update( g_depth, g_user );
         if ( g_controller ) g_controller->update( g_depth, g_user );
 
         screen()->redraw();
@@ -97,8 +84,6 @@ class TimerEvent : public kvs::TimerEventListener
 
 int main( int argc, char** argv )
 {
-    Argument arg( argc, argv );
-
     g_context.initialize();
 
     NewUser new_user;
@@ -128,15 +113,18 @@ int main( int argc, char** argv )
     g_context.setMirror( true );
     g_context.startGeneration();
 
-    if ( arg.hasOption( "PointCloud" ) )
-    {
-        g_cloud = new kvs::ni::PointCloudObject();
-        g_cloud->setColor( kvs::RGBColor( 192, 192, 192 ) );
-        screen.registerObject( g_cloud );
-    }
+    g_cloud = new kvs::ni::PointCloudObject();
+    g_cloud->setColor( kvs::RGBColor( 192, 192, 192 ) );
+    screen.registerObject( g_cloud );
 
     g_skeleton = new kvs::ni::SkeletonPolygonObject();
     screen.registerObject( g_skeleton );
+
+    g_texture = new kvs::ni::TextureObject();
+    g_renderer = new kvs::ni::TextureRenderer();
+    g_renderer->setType( kvs::ni::TextureRenderer::RightBottom );
+    g_renderer->setScale( 0.3f );
+    screen.registerObject( g_texture, g_renderer );
 
     g_controller = new kvs::ni::ScreenController( &screen );
 

@@ -16,3 +16,5 @@
 #include <kvs/ni/PointCloudObject.h>
 #include <kvs/ni/SkeletonPolygonObject.h>
 #include <kvs/ni/ScreenController.h>
+#include <kvs/ni/TextureObject.h>
+#include <kvs/ni/TextureRenderer.h>
