@@ -131,7 +131,7 @@ void TextureObject::update( kvs::ni::UserGenerator& user )
             for ( size_t x = 0; x < m_width; x++ )
             {
                 const size_t index = x + y * m_width;
-                if ( p_user[ index ] > 0 )
+                if ( p_user[ index ] == users[i] )
                 {
                     m_data[ index * 4     ] = color.r();
                     m_data[ index * 4 + 1 ] = color.g();
@@ -167,7 +167,7 @@ void TextureObject::update(
             for ( size_t x = 0; x < m_width; x++ )
             {
                 const size_t index = x + y * m_width;
-                if ( p_user[ index ] > 0 )
+                if ( p_user[ index ] == users[i] )
                 {
                     const float depth = static_cast<float>( max_depth - p_depth[ index ] ) / static_cast<float>( max_depth );
                     m_data[ index * 4     ] = static_cast<unsigned char>( color.r() * depth );

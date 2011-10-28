@@ -59,7 +59,7 @@ void TextureRenderer::exec( kvs::ObjectBase* object, kvs::Camera* camera, kvs::L
 {
     kvs::ni::TextureObject* image = reinterpret_cast<kvs::ni::TextureObject*>( object );
 
-    glPushAttrib( GL_CURRENT_BIT | GL_ENABLE_BIT );
+    glPushAttrib( GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT );
 
     glDisable( GL_DEPTH_TEST );
     glEnable( GL_TEXTURE_2D );
@@ -81,6 +81,8 @@ void TextureRenderer::exec( kvs::ObjectBase* object, kvs::Camera* camera, kvs::L
             glLoadIdentity();
             glOrtho( m_left, m_right, m_bottom, m_top, - 1, 1 );
 
+            glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+
             glEnableClientState( GL_VERTEX_ARRAY );
             glVertexPointer( 2, GL_FLOAT, 0, m_coords.pointer() );
 
@@ -98,6 +100,7 @@ void TextureRenderer::exec( kvs::ObjectBase* object, kvs::Camera* camera, kvs::L
     glPopMatrix();
     m_texture.unbind();
 
+    glDisable( GL_BLEND );
     glDisable( GL_ALPHA_TEST );
     glEnable( GL_DEPTH_TEST );
     glDisable( GL_TEXTURE_2D );
@@ -107,12 +110,13 @@ void TextureRenderer::exec( kvs::ObjectBase* object, kvs::Camera* camera, kvs::L
 
 void TextureRenderer::create_texture( const kvs::ni::TextureObject* object )
 {
+    glActiveTexture( GL_TEXTURE0 );
     if ( !glIsTexture( m_texture.id() ) )
     {
         m_texture.setPixelFormat( 4, 1 );
         m_texture.create( object->width(), object->height() );
-        glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
     }
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
     m_texture.bind();
     m_texture.download( object->width(), object->height(), object->data().pointer() );
 }
