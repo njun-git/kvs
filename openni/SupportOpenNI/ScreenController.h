@@ -122,7 +122,7 @@ public:
 
     void attachScreen( kvs::ScreenBase* screen );
 
-private:
+protected:
 
     const kvs::Vector3f vertex_of_joint(
         const unsigned int index,
@@ -144,6 +144,11 @@ private:
         const kvs::Vector3f& pre_right_hand,
         const kvs::Vector3f& cur_left_hand,
         const kvs::Vector3f& cur_right_hand );
+
+    const bool is_cross_pose(
+        const unsigned int index,
+        kvs::ni::DepthGenerator& depth,
+        kvs::ni::UserGenerator& user );
 
 };
 

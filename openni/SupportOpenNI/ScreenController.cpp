@@ -166,6 +166,10 @@ void ScreenController::update(
                 m_list.erase( itr );
             }
         }
+        if ( this->is_cross_pose( users[i], depth, user ) )
+        {
+            m_ref_screen->reset();
+        }
     }
 
 }
@@ -282,6 +286,24 @@ void ScreenController::scale(
     default: break;
     }
 }
+
+const bool ScreenController::is_cross_pose(
+    const unsigned int index,
+    kvs::ni::DepthGenerator& depth,
+    kvs::ni::UserGenerator& user )
+{
+    const kvs::Vector3f l0 = this->vertex_of_joint( index, kvs::ni::Skeleton::LeftHand, depth, user );
+    const kvs::Vector3f l1 = this->vertex_of_joint( index, kvs::ni::Skeleton::LeftElbow, depth, user );
+    const kvs::Vector3f r0 = this->vertex_of_joint( index, kvs::ni::Skeleton::RightHand, depth, user );
+    const kvs::Vector3f r1 = this->vertex_of_joint( index, kvs::ni::Skeleton::RightElbow, depth, user );
+
+    if ( kvs::Math::Abs( ( ( l1 - l0 ).normalize() ).dot( ( r1 - r0 ).normalize() ) ) < 0.1f )
+    {
+        if ( ( ( l1 + l0 ) - ( r1 + r0 ) ).length() < 2.0 * 0.1f ) return( true );
+    }
+    return( false );
+}
+
 
 }
 
