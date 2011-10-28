@@ -29,7 +29,6 @@
 #include "Application.h"
 #include "Configuration.h"
 #include "Camera.h"
-#include "MasterMessageSender.h"
 #include "RendererPaintEvent.h"
 #include "MasterReceiver.h"
 #include <kvs/TCPBarrier>
@@ -321,6 +320,11 @@ Screen::~Screen( void )
     glutDestroyWindow( m_id );
 }
 
+kvs::tdw::MasterMessageSender* Screen::masterSender( void )
+{
+    return( ::MasterSender );
+}
+
 /*===========================================================================*/
 /**
  *  @brief  Sets a screen position.
@@ -542,14 +546,17 @@ void Screen::initializeEvent( void )
 
         const int port = kvs::tdw::Configuration::Master().socket().port();
         const int nrenderers = kvs::tdw::Configuration::RendererCount();
-        BarrierServer = new kvs::TCPBarrierServer( port, nrenderers );
-
-        if ( kvs::tdw::Configuration::HasRemote() )
+        if ( nrenderers > 0 )
         {
-            ::MasterReceiver = new kvs::tdw::MasterReceiver( this );
-            ::MasterReceiver->attachEventHandler( BaseClass::eventHandler() );
-            ::MasterReceiver->attachMasterMessageSender( MasterSender );
-            ::MasterReceiver->start();
+            BarrierServer = new kvs::TCPBarrierServer( port, nrenderers );
+
+            if ( kvs::tdw::Configuration::HasRemote() )
+            {
+                ::MasterReceiver = new kvs::tdw::MasterReceiver( this );
+                ::MasterReceiver->attachEventHandler( BaseClass::eventHandler() );
+                ::MasterReceiver->attachMasterMessageSender( MasterSender );
+                ::MasterReceiver->start();
+            }
         }
 
         MasterSender->sendPaintEvent( this );
@@ -690,20 +697,12 @@ void Screen::keyPressEvent( kvs::KeyEvent* event )
 
 const std::pair<int,int> Screen::registerObject( kvs::ObjectBase* object, kvs::RendererBase* renderer )
 {
-    if ( kvs::tdw::Application::IsRenderer() )
-    {
-        return( BaseClass::registerObject( object, renderer ) );
-    }
-    return( std::pair<int, int>( 0, 0 ) );
+    return( BaseClass::registerObject( object, renderer ) );
 }
 
 const std::pair<int,int> Screen::registerObject( kvs::VisualizationPipeline* pipeline )
 {
-    if ( kvs::tdw::Application::IsRenderer() )
-    {
-        return( BaseClass::registerObject( pipeline ) );
-    }
-    return( std::pair<int, int>( 0, 0 ) );
+    return( BaseClass::registerObject( pipeline ) );
 }
 
 /*===========================================================================*/

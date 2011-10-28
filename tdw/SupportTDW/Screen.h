@@ -32,7 +32,7 @@
 
 #include "Timer.h"
 #include "Application.h"
-
+#include "MasterMessageSender.h"
 
 namespace kvs
 {
@@ -80,6 +80,10 @@ public:
     Screen( kvs::tdw::Application* application = 0 );
 
     virtual ~Screen( void );
+
+public:
+
+    kvs::tdw::MasterMessageSender* masterSender( void );
 
 public:
 
