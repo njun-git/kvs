@@ -61,7 +61,7 @@ void ScreenController::update(
     }
 
     kvs::ValueArray<unsigned int> users = user.users();
-    const float hand_level = 0.4f;
+    const float hand_level = 0.35f;
     for ( size_t i = 0; i < users.size(); i++ )
     {
         HandList::iterator itr = m_list.begin();
@@ -241,7 +241,7 @@ void ScreenController::translate(
 {
     if ( ( cur_hand - pre_hand ).length() > 0.125f ) return;
 
-    kvs::Vector3f t = 4.0f * ( cur_hand - pre_hand ); t.z() = 0.0f;
+    kvs::Vector3f t = 6.0f * ( cur_hand - pre_hand ); t.z() = 0.0f;
 
     switch( m_ref_screen->controlTarget() )
     {

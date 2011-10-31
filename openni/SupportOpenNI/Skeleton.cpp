@@ -227,6 +227,27 @@ const JointOrientation Skeleton::jointOrientation( const int user, const Skeleto
     return( orientation );
 }
 
+const bool Skeleton::setSmoothing( const float smoothing )
+{
+    if ( !m_is_attached )
+    {
+        kvsMessageError( "kvs::ni::UserGenerator* is not attached." );
+        return( false );
+    }
+
+    XnStatus status = m_skeleton.SetSmoothing(
+        static_cast<XnFloat>( smoothing ) );
+    if ( status != XN_STATUS_OK )
+    {
+        kvsMessageError( "%s error: <%s>.",
+            xnGetStatusName( status ),
+            xnGetStatusString( status ) );
+        return( false );
+    }
+
+    return( true );
+}
+
 const bool Skeleton::startTracking( const unsigned int user )
 {
     if ( !m_is_attached )

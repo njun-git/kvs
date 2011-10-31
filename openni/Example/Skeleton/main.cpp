@@ -114,6 +114,7 @@ int main( int argc, char** argv )
 
     g_depth.create( g_context );
     g_user.create( g_context );
+    g_user.skeleton().setSmoothing( 0.75f );
 
     kvs::glut::Application app( argc, argv );
     kvs::glut::Screen screen( &app );

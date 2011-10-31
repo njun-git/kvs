@@ -222,6 +222,8 @@ public:
 
     const JointOrientation jointOrientation( const int user, const SkeletonJoint& joint );
 
+    const bool setSmoothing( const float smoothing );
+
     const bool startTracking( const unsigned int user );
 
     const bool stopTracking( const unsigned int user );
