@@ -63,9 +63,7 @@ void RendererReceiver::run( void )
         if ( m_acceptor.receive( &message_block ) )
         {
             m_mutex->lock();
-            //if ( m_messages->empty() )
             m_messages->push_back( message_block );
-            //if ( m_messages->size() > 3 ) m_messages->pop_front();
             m_mutex->unlock();
         }
     }

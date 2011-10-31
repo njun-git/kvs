@@ -62,7 +62,7 @@ void MasterReceiver::initialize( void )
     const int port = kvs::tdw::Configuration::RemotePort();
     if ( !m_acceptor.bind( port, 50 ) )
     {
-        kvsMessageError( "Cannot bind port <%d>", port );
+        kvsMessageError( "Cannot bind port <%d>.", port );
         exit( EXIT_FAILURE );
     }
 }

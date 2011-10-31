@@ -46,7 +46,7 @@ void MasterMessageSender::sendMessage( const kvs::MessageBlock& message )
 {
     for ( size_t i = 0; i < m_addresses.size(); i++ )
     {
-        kvs::Connector connector( m_addresses[i].ip(), m_addresses[i].port(), 50 );
+        kvs::Connector connector( m_addresses[i].ip(), m_addresses[i].port(), 1 );
         connector.send( message );
     }
 }
