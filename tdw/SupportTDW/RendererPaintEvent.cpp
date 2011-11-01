@@ -50,9 +50,7 @@ void RendererPaintEvent::attach( kvs::EventListener* listener )
 
 void RendererPaintEvent::clearMessage( void )
 {
-    m_mutex.lock();
     m_messages.clear();
-    m_mutex.unlock();
 }
 
 void RendererPaintEvent::update( void )
@@ -64,6 +62,7 @@ void RendererPaintEvent::update( void )
         usleep(1);
     }
 
+    m_mutex.lock();
     if ( !m_messages.empty() )
     {
         std::list<kvs::MessageBlock>::iterator message_itr = m_messages.begin();
@@ -74,35 +73,72 @@ void RendererPaintEvent::update( void )
 
             kvs::tdw::MessageConverter converter;
             const std::string type = converter.messageType( message );
-            kvs::EventBase* event = NULL;
-            if ( type == KVS_TDW_PAINT_EVENT )      converter.applyPaintEvent( screen(), message );
-            else if ( type == KVS_TDW_KEY_EVENT )   event = converter.keyEvent( message );
-            else if ( type == KVS_TDW_TIMER_ENENT ) event = converter.timerEvent( message );
-
-            std::list<kvs::EventListener*>::iterator listener = m_listeners.begin();
-            std::list<kvs::EventListener*>::iterator end = m_listeners.end();
-
-            while ( listener != end )
+            if ( type == KVS_TDW_STACK_EVENT )
             {
-                if ( (*listener)->eventType() & kvs::EventBase::PaintEvent )
+                std::vector<kvs::MessageBlock> stack = converter.eventStack( message );
+                for ( size_t i = 0; i < stack.size(); i++ )
                 {
-                    (*listener)->onEvent();
-                }
-                else if ( event )
-                {
-                    if ( (*listener)->eventType() & event->type() )
-                    {
-                        (*listener)->onEvent( event );
-                    }
-                }
+                    kvs::EventBase* event = NULL;
+                    const std::string event_type = converter.messageType( stack[i] );
+                    if ( event_type == KVS_TDW_PAINT_EVENT )      converter.applyPaintEvent( screen(), stack[i] );
+                    else if ( event_type == KVS_TDW_KEY_EVENT )   event = converter.keyEvent( stack[i] );
+                    else if ( event_type == KVS_TDW_TIMER_EVENT ) event = converter.timerEvent( stack[i] );
 
-                ++listener;
+                    std::list<kvs::EventListener*>::iterator listener = m_listeners.begin();
+                    std::list<kvs::EventListener*>::iterator end = m_listeners.end();
+
+                    while ( listener != end )
+                    {
+                        if ( (*listener)->eventType() & kvs::EventBase::PaintEvent )
+                        {
+                            (*listener)->onEvent();
+                        }
+                        else if ( event )
+                        {
+                            if ( (*listener)->eventType() & event->type() )
+                            {
+                                (*listener)->onEvent( event );
+                            }
+                        }
+
+                        ++listener;
+                    }
+                    if ( event ) delete event;
+                }
             }
-            if ( event ) delete event;
+            else
+            {
+                kvs::EventBase* event = NULL;
+                if ( type == KVS_TDW_PAINT_EVENT )      converter.applyPaintEvent( screen(), message );
+                else if ( type == KVS_TDW_KEY_EVENT )   event = converter.keyEvent( message );
+                else if ( type == KVS_TDW_TIMER_EVENT ) event = converter.timerEvent( message );
+
+                std::list<kvs::EventListener*>::iterator listener = m_listeners.begin();
+                std::list<kvs::EventListener*>::iterator end = m_listeners.end();
+
+                while ( listener != end )
+                {
+                    if ( (*listener)->eventType() & kvs::EventBase::PaintEvent )
+                    {
+                        (*listener)->onEvent();
+                    }
+                    else if ( event )
+                    {
+                        if ( (*listener)->eventType() & event->type() )
+                        {
+                            (*listener)->onEvent( event );
+                        }
+                    }
+
+                    ++listener;
+                }
+                if ( event ) delete event;
+            }
             message_itr++;
         }
         this->clearMessage();
     }
+    m_mutex.unlock();
 
     screen()->redraw();
 }

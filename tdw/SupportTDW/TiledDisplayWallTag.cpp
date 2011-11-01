@@ -26,7 +26,8 @@ TiledDisplayWallTag::TiledDisplayWallTag( void ) :
     m_nrenderers( 0 ),
     m_has_full_resolution( false ),
     m_full_resolution( 512, 512 ),
-    m_is_fullscreen( false )
+    m_is_fullscreen( false ),
+    m_is_sync( true )
 {
 }
 
@@ -59,6 +60,11 @@ const bool TiledDisplayWallTag::isFullscreen( void ) const
     return( m_is_fullscreen );
 }
 
+const bool TiledDisplayWallTag::isSync( void ) const
+{
+    return( m_is_sync );
+}
+
 void TiledDisplayWallTag::setNRenderers( const int nrenderers )
 {
     m_has_nrenderers = true;
@@ -74,6 +80,11 @@ void TiledDisplayWallTag::setFullResolution( const kvs::Vector2i& full_resolutio
 void TiledDisplayWallTag::setFullscreen( const bool fullscreen )
 {
     m_is_fullscreen = fullscreen;
+}
+
+void TiledDisplayWallTag::setSync( const bool sync )
+{
+    m_is_sync = sync;
 }
 
 const bool TiledDisplayWallTag::read( const kvs::XMLNode::SuperClass* parent )
@@ -124,6 +135,12 @@ const bool TiledDisplayWallTag::read( const kvs::XMLNode::SuperClass* parent )
     if ( fullscreen != "" )
     {
         m_is_fullscreen = ( static_cast<int>( atoi( fullscreen.c_str() ) ) > 0 );
+    }
+
+    const std::string sync = kvs::XMLElement::AttributeValue( element, "sync" );
+    if ( sync != "" )
+    {
+        m_is_sync = ( static_cast<int>( atoi( sync.c_str() ) ) > 0 );
     }
 
     return( true );

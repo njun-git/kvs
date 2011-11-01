@@ -31,6 +31,7 @@ protected:
     kvs::tdw::Master                m_master;
     std::vector<kvs::tdw::Renderer> m_renderers;
     bool                            m_is_fullscreen;
+    bool                            m_is_sync;
 
 public:
 
@@ -45,6 +46,8 @@ public:
     const size_t nrenderers( void ) const;
 
     const bool isFullscreen( void ) const;
+
+    const bool isSync( void ) const;
 
     const kvs::tdw::Master& master( void ) const;
 

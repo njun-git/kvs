@@ -76,25 +76,52 @@ void MasterReceiver::run( void )
         {
             kvs::tdw::MessageConverter converter;
             const std::string type = converter.messageType( message_block );
-            kvs::EventBase* event = NULL;
-            if ( type == KVS_TDW_PAINT_EVENT )      converter.applyPaintEvent( m_screen, message_block );
-            else if ( type == KVS_TDW_KEY_EVENT )   event = converter.keyEvent( message_block );
-            else if ( type == KVS_TDW_TIMER_ENENT ) event = converter.timerEvent( message_block );
-
-            if ( m_handler )
+            if ( type == KVS_TDW_STACK_EVENT )
             {
-                if ( event )
+                std::vector<kvs::MessageBlock> stack = converter.eventStack( message_block );
+                for ( size_t i = 0; i < stack.size(); i++ )
                 {
-                    m_handler->notify( event );
-                }
-                else
-                {
-                    m_handler->notify();
+                    kvs::EventBase* event = NULL;
+                    const std::string event_type = converter.messageType( stack[i] );
+                    if ( event_type == KVS_TDW_PAINT_EVENT )      converter.applyPaintEvent( m_screen, stack[i] );
+                    else if ( event_type == KVS_TDW_KEY_EVENT )   event = converter.keyEvent( stack[i] );
+                    else if ( event_type == KVS_TDW_TIMER_EVENT ) event = converter.timerEvent( stack[i] );
+
+                    if ( m_handler )
+                    {
+                        if ( event )
+                        {
+                            m_handler->notify( event );
+                        }
+                        else
+                        {
+                            m_handler->notify();
+                        }
+                    }
+                    if ( event ) delete event;
                 }
             }
+            else
+            {
+                kvs::EventBase* event = NULL;
+                if ( type == KVS_TDW_PAINT_EVENT )      converter.applyPaintEvent( m_screen, message_block );
+                else if ( type == KVS_TDW_KEY_EVENT )   event = converter.keyEvent( message_block );
+                else if ( type == KVS_TDW_TIMER_EVENT ) event = converter.timerEvent( message_block );
 
+                if ( m_handler )
+                {
+                    if ( event )
+                    {
+                        m_handler->notify( event );
+                    }
+                    else
+                    {
+                        m_handler->notify();
+                    }
+                }
+                if ( event ) delete event;
+            }
             if ( m_sender ) m_sender->sendMessage( message_block );
-            if ( event ) delete event;
         }
     }
 }

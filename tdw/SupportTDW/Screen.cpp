@@ -32,13 +32,13 @@
 #include "RendererPaintEvent.h"
 #include "MasterReceiver.h"
 #include <kvs/TCPBarrier>
-#include <kvs/TCPBarrierServer>
+#include "TCPBarrierServer.h"
 
 // Static parameters.
 namespace { const size_t MaxNumberOfScreens = 4; }
 namespace { kvs::tdw::Screen* context[::MaxNumberOfScreens]; }
 
-namespace { kvs::TCPBarrierServer* BarrierServer = 0; }
+namespace { kvs::tdw::TCPBarrierServer* BarrierServer = 0; }
 namespace { kvs::tdw::MasterMessageSender* MasterSender = 0; }
 namespace { kvs::tdw::MasterReceiver* MasterReceiver = 0; }
 namespace { kvs::tdw::RendererPaintEvent* RendererEvent = 0; }
@@ -277,7 +277,6 @@ Screen::Screen( kvs::tdw::Application* application ):
         DefalutKeyPressEvent* key_press = new DefalutKeyPressEvent( this );
         RendererEvent->attach( key_press );
 
-        //this->addPaintEvent( RendererEvent );
         RendererEvent->setScreen( this );
         BaseClass::eventHandler()->attach( RendererEvent );
     }
@@ -548,13 +547,16 @@ void Screen::initializeEvent( void )
         const int nrenderers = kvs::tdw::Configuration::RendererCount();
         if ( nrenderers > 0 )
         {
-            BarrierServer = new kvs::TCPBarrierServer( port, nrenderers );
+            if ( kvs::tdw::Configuration::IsSync() )
+            {
+                ::BarrierServer = new kvs::tdw::TCPBarrierServer( port, nrenderers, ::MasterSender );
+            }
 
             if ( kvs::tdw::Configuration::HasRemote() )
             {
                 ::MasterReceiver = new kvs::tdw::MasterReceiver( this );
                 ::MasterReceiver->attachEventHandler( BaseClass::eventHandler() );
-                ::MasterReceiver->attachMasterMessageSender( MasterSender );
+                ::MasterReceiver->attachMasterMessageSender( ::MasterSender );
                 ::MasterReceiver->start();
             }
         }
@@ -573,12 +575,16 @@ void Screen::paintEvent( void )
     if ( m_paint_event_func ) (this->*m_paint_event_func)();
     else BaseClass::eventHandler()->notify();
 
-    if ( kvs::tdw::Application::IsRenderer() )
+    if ( kvs::tdw::Application::IsRenderer() && kvs::tdw::Configuration::IsSync() )
     {
         static kvs::SocketAddress master = kvs::tdw::Configuration::Master().socket();
         kvs::TCPBarrier barrier( master.ip(), master.port() );
         barrier.wait();
 
+        glutSwapBuffers();
+    }
+    else if ( kvs::tdw::Application::IsRenderer() && !kvs::tdw::Configuration::IsSync() )
+    {
         glutSwapBuffers();
     }
 }

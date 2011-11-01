@@ -20,6 +20,8 @@ namespace tdw
 {
 
 bool                             Configuration::m_is_fullsreen;
+bool                             Configuration::m_is_sync;
+bool                             Configuration::m_is_rendering;
 kvs::tdw::Master                 Configuration::m_master;
 std::vector<kvs::tdw::Renderer>  Configuration::m_renderers;
 
@@ -35,6 +37,21 @@ Configuration::~Configuration( void )
 bool Configuration::IsFullScreen( void )
 {
     return( m_is_fullsreen );
+}
+
+bool Configuration::IsSync( void )
+{
+    return( m_is_sync );
+}
+
+bool Configuration::IsRendering( void )
+{
+    return( m_is_rendering );
+}
+
+void Configuration::setIsRendering( const bool rendering )
+{
+    m_is_rendering = rendering;
 }
 
 kvs::tdw::Master Configuration::Master( void )
@@ -132,12 +149,15 @@ kvs::Vector2i Configuration::RendererSize( const std::string name )
 
 void Configuration::initialize_parameters( void )
 {
+    m_is_rendering = false;
+
     kvs::File default_file( DEFAULT_CONF_PATH );
     if ( default_file.isExisted() )
     {
         kvs::KVSMLTiledDisplayWall* kvsml = new kvs::KVSMLTiledDisplayWall( DEFAULT_CONF_PATH );
         if ( !kvsml->isSuccess() ) exit( EXIT_FAILURE );
         m_is_fullsreen = kvsml->isFullscreen();
+        m_is_sync = kvsml->isSync();
         m_master = kvsml->master();
         m_renderers = kvsml->rendererList();
         delete kvsml;
@@ -157,6 +177,7 @@ void Configuration::initialize_parameters( void )
         kvs::KVSMLTiledDisplayWall* kvsml = new kvs::KVSMLTiledDisplayWall( env_path );
         if ( !kvsml->isSuccess() ) exit( EXIT_FAILURE );
         m_is_fullsreen = kvsml->isFullscreen();
+        m_is_sync = kvsml->isSync();
         m_master = kvsml->master();
         m_renderers = kvsml->rendererList();
         delete kvsml;

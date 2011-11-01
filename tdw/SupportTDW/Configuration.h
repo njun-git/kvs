@@ -26,6 +26,8 @@ class Configuration
 protected:
 
     static bool                             m_is_fullsreen;
+    static bool                             m_is_sync;
+    static bool                             m_is_rendering;
     static kvs::tdw::Master                 m_master;
     static std::vector<kvs::tdw::Renderer>  m_renderers;
 
@@ -38,6 +40,12 @@ public:
 public:
 
     static bool IsFullScreen( void );
+
+    static bool IsSync( void );
+
+    static bool IsRendering( void );
+
+    static void setIsRendering( const bool rendering );
 
     static kvs::tdw::Master Master( void );
 

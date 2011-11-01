@@ -14,3 +14,4 @@
 #include <kvs/tdw/Screen.h>
 #include <kvs/tdw/TiledDisplayWallTag.h>
 #include <kvs/tdw/Timer.h>
+#include <kvs/tdw/TCPBarrierServer.h>

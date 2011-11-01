@@ -15,10 +15,12 @@
 #include <kvs/KeyEvent>
 #include <kvs/TimeEvent>
 #include <cstdarg>
+#include <vector>
 
 #define KVS_TDW_PAINT_EVENT "PAINT"
 #define KVS_TDW_KEY_EVENT "KEY_PRESS"
-#define KVS_TDW_TIMER_ENENT "TIMER"
+#define KVS_TDW_TIMER_EVENT "TIMER"
+#define KVS_TDW_STACK_EVENT "STACK"
 
 #define KVS_TDW_PAINT_EVENT_ROTATION "ROTATION"
 #define KVS_TDW_PAINT_EVENT_TRANSLATION "TRANSLATION"
@@ -46,6 +48,8 @@ public:
 
     const std::string messageType( const kvs::MessageBlock& block );
 
+    const std::vector<kvs::MessageBlock> eventStack( const kvs::MessageBlock& block );
+
     void applyPaintEvent( kvs::ScreenBase* screen, const kvs::MessageBlock& block );
 
     kvs::KeyEvent* keyEvent( const kvs::MessageBlock& block );
@@ -62,6 +66,8 @@ public:
 
     // Apply Timer event, and redraw.
     const kvs::MessageBlock timerEventMessage( kvs::TimeEvent* event = 0 );
+
+    const kvs::MessageBlock eventStackMessage( const std::vector<kvs::MessageBlock>& stack );
 
 public:
 

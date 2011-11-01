@@ -35,6 +35,7 @@ protected:
     kvs::Vector2i m_full_resolution;
 
     bool m_is_fullscreen;
+    bool m_is_sync;
 
 public:
 
@@ -54,6 +55,8 @@ public:
 
     const bool isFullscreen( void ) const;
 
+    const bool isSync( void ) const;
+
 public:
 
     void setNRenderers( const int nrenderers );
@@ -61,6 +64,8 @@ public:
     void setFullResolution( const kvs::Vector2i& full_resolution );
 
     void setFullscreen( const bool fullscreen );
+
+    void setSync( const bool sync );
 
 public:
 

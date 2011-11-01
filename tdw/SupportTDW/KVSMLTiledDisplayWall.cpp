@@ -23,13 +23,15 @@ namespace kvs
 
 KVSMLTiledDisplayWall::KVSMLTiledDisplayWall( void ) :
     m_nrenderers( 0 ),
-    m_is_fullscreen( false )
+    m_is_fullscreen( false ),
+    m_is_sync( true )
 {
 }
 
 KVSMLTiledDisplayWall::KVSMLTiledDisplayWall( const std::string& filename ) :
     m_nrenderers( 0 ),
-    m_is_fullscreen( false )
+    m_is_fullscreen( false ),
+    m_is_sync( true )
 {
     if ( this->read( filename ) ) { m_is_success = true; }
     else { m_is_success = false; }
@@ -47,6 +49,11 @@ const size_t KVSMLTiledDisplayWall::nrenderers( void ) const
 const bool KVSMLTiledDisplayWall::isFullscreen( void ) const
 {
     return( m_is_fullscreen );
+}
+
+const bool KVSMLTiledDisplayWall::isSync( void ) const
+{
+    return( m_is_sync );
 }
 
 const kvs::tdw::Master& KVSMLTiledDisplayWall::master( void ) const
@@ -94,6 +101,7 @@ const bool KVSMLTiledDisplayWall::read( const std::string& filename )
     m_nrenderers = static_cast<size_t>( tdw_tag.nrenderers() );
     m_master.setResolution( tdw_tag.fullResolution() );
     m_is_fullscreen = tdw_tag.isFullscreen();
+    m_is_sync = tdw_tag.isSync();
 
     // <Master>
     kvs::kvsml::MasterTag master_tag;

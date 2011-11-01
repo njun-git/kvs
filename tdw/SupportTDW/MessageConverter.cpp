@@ -37,6 +37,29 @@ const std::string MessageConverter::messageType( const kvs::MessageBlock& block 
     return( message_type );
 }
 
+const std::vector<kvs::MessageBlock> MessageConverter::eventStack( const kvs::MessageBlock& block )
+{
+    std::vector<kvs::MessageBlock> stack;
+    if ( this->messageType( block ) == KVS_TDW_STACK_EVENT )
+    {
+        unsigned char* pData = (unsigned char*)block.pointer();
+        pData += sizeof(unsigned char) * 6;
+        const unsigned int nstacks = *( (unsigned int*)pData ); pData += sizeof(unsigned int);
+        for ( size_t i = 0; i < nstacks; i++ )
+        {
+            const unsigned int data_size = *( (unsigned int*)pData ); pData += sizeof(unsigned int);
+            kvs::MessageBlock message( pData, data_size );
+            pData += data_size;
+            stack.push_back( message );
+        }
+    }
+    else
+    {
+        stack.push_back( block );
+    }
+    return( stack );
+}
+
 void MessageConverter::applyPaintEvent( kvs::ScreenBase* screen, const kvs::MessageBlock& block )
 {
     unsigned char* pData = (unsigned char*)block.pointer();
@@ -120,7 +143,7 @@ kvs::TimeEvent* MessageConverter::timerEvent( const kvs::MessageBlock& block )
     const std::string message_type = this->messageType( block );
     pData += sizeof(char) * message_type.length();
 
-    if ( message_type != KVS_TDW_TIMER_ENENT ) return( NULL );
+    if ( message_type != KVS_TDW_TIMER_EVENT ) return( NULL );
 
     kvs::TimeEvent* event = new kvs::TimeEvent();
     return( event );
@@ -171,9 +194,33 @@ const kvs::MessageBlock MessageConverter::keyEventMessage( kvs::KeyEvent* event 
 
 const kvs::MessageBlock MessageConverter::timerEventMessage( kvs::TimeEvent* event )
 {
-    const std::string header = std::string( KVS_TDW_TIMER_ENENT ) + std::string( ":" );
+    const std::string header = std::string( KVS_TDW_TIMER_EVENT ) + std::string( ":" );
 
     return( kvs::tdw::MessageConverter::CreateMessage<int>( header, 0 ) );
+}
+
+const kvs::MessageBlock MessageConverter::eventStackMessage( const std::vector<kvs::MessageBlock>& stack )
+{
+    const std::string header = std::string( KVS_TDW_STACK_EVENT ) + std::string( ":" );
+    unsigned int nstacks = stack.size();
+    size_t message_size = header.length() + sizeof(unsigned int) * ( 1 + nstacks );
+    for ( unsigned int i = 0; i < nstacks; i++ ) message_size += stack[i].size();
+
+    kvs::ValueArray<unsigned char> data( message_size );
+    unsigned char* p = data.pointer();
+    size_t loc = 0;
+
+    memcpy( p, header.c_str(), header.length() ); loc += header.length();
+    memcpy( p + loc, &nstacks, sizeof(nstacks) ); loc += sizeof(nstacks);
+
+    for ( unsigned int i = 0; i < nstacks; i++ )
+    {
+        unsigned int block_size = stack[i].size();
+        memcpy( p + loc, &block_size, sizeof(block_size) ); loc += sizeof(block_size);
+        memcpy( p + loc, stack[i].pointer(), block_size );  loc += block_size;
+    }
+
+    return( kvs::MessageBlock( data.pointer(), data.size() ) );
 }
 
 void MessageConverter::rotate( kvs::ScreenBase* screen, const kvs::Quaternion<float>& q )
