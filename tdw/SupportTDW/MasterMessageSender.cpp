@@ -49,7 +49,17 @@ kvs::Mutex& MasterMessageSender::mutex( void )
 
 void MasterMessageSender::sendMessage( const kvs::MessageBlock& message )
 {
-    this->send_message( message, true );
+    m_mutex.lock();
+    const bool is_rendering = kvs::tdw::Configuration::IsRendering();
+    m_mutex.unlock();
+    if ( is_rendering && kvs::tdw::Configuration::IsSync() )
+    {
+        this->stackMessage( message );
+    }
+    else
+    {
+        this->send_message( message, true );
+    }
 }
 
 void MasterMessageSender::sendStackMessage( void )
