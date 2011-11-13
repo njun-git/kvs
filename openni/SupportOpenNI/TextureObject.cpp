@@ -126,6 +126,7 @@ void TextureObject::update( kvs::ni::UserGenerator& user )
         const unsigned short* p_user = user.pointer( users[i] );
         const size_t color_index = users[i] % 5;
         kvs::RGBColor color = color_map[ color_index ];
+        const float ratio = ( user.skeleton().isTracking( users[i] ) ) ? 1.0f : 0.5f;
         for ( size_t y = 0; y < m_height; y++ )
         {
             for ( size_t x = 0; x < m_width; x++ )
@@ -133,9 +134,9 @@ void TextureObject::update( kvs::ni::UserGenerator& user )
                 const size_t index = x + y * m_width;
                 if ( p_user[ index ] == users[i] )
                 {
-                    m_data[ index * 4     ] = color.r();
-                    m_data[ index * 4 + 1 ] = color.g();
-                    m_data[ index * 4 + 2 ] = color.b();
+                    m_data[ index * 4     ] = static_cast<unsigned char>( ratio * color.r() );
+                    m_data[ index * 4 + 1 ] = static_cast<unsigned char>( ratio * color.g() );
+                    m_data[ index * 4 + 2 ] = static_cast<unsigned char>( ratio * color.b() );
                     m_data[ index * 4 + 3 ] = 255;
                 }
             }
@@ -162,6 +163,7 @@ void TextureObject::update(
         const unsigned short max_depth = static_cast<unsigned short>( 2 * com.z() );
         const size_t color_index = users[i] % 5;
         kvs::RGBColor color = color_map[ color_index ];
+        const float ratio = ( user.skeleton().isTracking( users[i] ) ) ? 1.0f : 0.5f;
         for ( size_t y = 0; y < m_height; y++ )
         {
             for ( size_t x = 0; x < m_width; x++ )
@@ -170,9 +172,9 @@ void TextureObject::update(
                 if ( p_user[ index ] == users[i] )
                 {
                     const float depth = static_cast<float>( max_depth - p_depth[ index ] ) / static_cast<float>( max_depth );
-                    m_data[ index * 4     ] = static_cast<unsigned char>( color.r() * depth );
-                    m_data[ index * 4 + 1 ] = static_cast<unsigned char>( color.g() * depth );
-                    m_data[ index * 4 + 2 ] = static_cast<unsigned char>( color.b() * depth );
+                    m_data[ index * 4     ] = static_cast<unsigned char>( ratio * color.r() * depth );
+                    m_data[ index * 4 + 1 ] = static_cast<unsigned char>( ratio * color.g() * depth );
+                    m_data[ index * 4 + 2 ] = static_cast<unsigned char>( ratio * color.b() * depth );
                     m_data[ index * 4 + 3 ] = 255;
                 }
             }
