@@ -102,7 +102,7 @@ int main( int argc, char** argv )
             kvs::TransferFunction tfunc( arg.optionValue<std::string>( "tfunc" ) );
             volume_renderer->setTransferFunction( tfunc );
         }
-        renderer->registerRenderer( volume, volume_renderer );
+        renderer->registerRenderer( volume_renderer );
         if ( !null ) null = new kvs::NullObject( volume );
     }
 
@@ -117,7 +117,7 @@ int main( int argc, char** argv )
         kvs::glew::StochasticPolygonRenderer* polygon_renderer = new kvs::glew::StochasticPolygonRenderer( polygon );
         polygon_renderer->setShader( kvs::Shader::BlinnPhong() );
 
-        renderer->registerRenderer( polygon, polygon_renderer );
+        renderer->registerRenderer( polygon_renderer );
         if ( !null ) null = new kvs::NullObject( polygon );
     }
 
@@ -128,7 +128,7 @@ int main( int argc, char** argv )
         kvs::glew::StochasticLineRenderer* line_renderer = new kvs::glew::StochasticLineRenderer( line );
         line_renderer->setOpacity( 64 );
 
-        renderer->registerRenderer( line, line_renderer );
+        renderer->registerRenderer( line_renderer );
         if ( !null ) null = new kvs::NullObject( line );
     }
 
@@ -139,7 +139,7 @@ int main( int argc, char** argv )
         kvs::glew::StochasticPointRenderer* point_renderer = new kvs::glew::StochasticPointRenderer( point, repeat_level );
         point_renderer->setShader( kvs::Shader::BlinnPhong() );
 
-        renderer->registerRenderer( point, point_renderer );
+        renderer->registerRenderer( point_renderer );
         if ( !null ) null = new kvs::NullObject( point );
     }
 

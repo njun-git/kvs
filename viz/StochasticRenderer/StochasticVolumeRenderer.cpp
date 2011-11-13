@@ -251,7 +251,7 @@ StochasticVolumeRenderer::StochasticVolumeRenderer( void )
 }
 
 StochasticVolumeRenderer::StochasticVolumeRenderer(
-    const kvs::UnstructuredVolumeObject* volume,
+    kvs::UnstructuredVolumeObject* volume,
     const size_t nsteps )
 {
     this->initialize();
@@ -289,7 +289,7 @@ void StochasticVolumeRenderer::initialize( void )
     m_step = 0;
 }
 
-void StochasticVolumeRenderer::attachVolumeObject( const kvs::UnstructuredVolumeObject* volume )
+void StochasticVolumeRenderer::attachVolumeObject( kvs::UnstructuredVolumeObject* volume )
 {
     m_ref_volume = volume;
 
@@ -333,6 +333,16 @@ const kvs::TransferFunction& StochasticVolumeRenderer::transferFunction( void ) 
 kvs::TransferFunction& StochasticVolumeRenderer::transferFunction( void )
 {
     return( m_tfunc );
+}
+
+kvs::ObjectBase* StochasticVolumeRenderer::object( void ) const
+{
+    return( m_ref_volume );
+}
+
+void StochasticVolumeRenderer::attachObject( kvs::ObjectBase* object )
+{
+    this->attachVolumeObject( static_cast<kvs::UnstructuredVolumeObject*>( object ) );
 }
 
 const StochasticRendererBase::RendererType StochasticVolumeRenderer::rendererType( void ) const

@@ -20,7 +20,7 @@ StochasticPolygonRenderer::StochasticPolygonRenderer( void )
     BaseClass::setShader( kvs::Shader::Lambert() );
 }
 
-StochasticPolygonRenderer::StochasticPolygonRenderer( const kvs::PolygonObject* polygon )
+StochasticPolygonRenderer::StochasticPolygonRenderer( kvs::PolygonObject* polygon )
 {
     this->initialize();
     this->attachPolygonObject( polygon );
@@ -54,7 +54,7 @@ void StochasticPolygonRenderer::initialize( void )
     m_polygon_offset = 0.001f;
 }
 
-void StochasticPolygonRenderer::attachPolygonObject( const kvs::PolygonObject* polygon )
+void StochasticPolygonRenderer::attachPolygonObject( kvs::PolygonObject* polygon )
 {
     // Check polygon object for rendering.
     if ( polygon->polygonType() != kvs::PolygonObject::Triangle )
@@ -93,6 +93,16 @@ void StochasticPolygonRenderer::attachPolygonObject( const kvs::PolygonObject* p
 void StochasticPolygonRenderer::setPolygonOffset( const float polygon_offset )
 {
     m_polygon_offset = polygon_offset;
+}
+
+kvs::ObjectBase* StochasticPolygonRenderer::object( void ) const
+{
+    return( m_ref_polygon );
+}
+
+void StochasticPolygonRenderer::attachObject( kvs::ObjectBase* object )
+{
+    this->attachPolygonObject( static_cast<kvs::PolygonObject*>( object ) );
 }
 
 const StochasticRendererBase::RendererType StochasticPolygonRenderer::rendererType( void ) const

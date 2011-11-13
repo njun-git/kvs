@@ -264,7 +264,7 @@ void StochasticPointRenderer::initialize( void )
     m_point_size = 1.0f;
 }
 
-void StochasticPointRenderer::attachPointObject( const kvs::PointObject* point )
+void StochasticPointRenderer::attachPointObject( kvs::PointObject* point )
 {
     m_ref_particle = point;
 
@@ -278,6 +278,16 @@ void StochasticPointRenderer::attachPointObject( const kvs::PointObject* point )
 void StochasticPointRenderer::setPointSize( const float point_size )
 {
     m_point_size = point_size;
+}
+
+kvs::ObjectBase* StochasticPointRenderer::object( void ) const
+{
+    return( m_ref_particle );
+}
+
+void StochasticPointRenderer::attachObject( kvs::ObjectBase* object )
+{
+    this->attachPointObject( static_cast<kvs::PointObject*>( object ) );
 }
 
 const StochasticRendererBase::RendererType StochasticPointRenderer::rendererType( void ) const

@@ -39,7 +39,6 @@ class StochasticRenderer : public kvs::RendererBase
 
 public:
 
-    typedef std::vector<kvs::ObjectBase*>                   ObjectList;
     typedef std::vector<kvs::glew::StochasticRendererBase*> RendererList;
 
 protected:
@@ -68,7 +67,6 @@ protected:
     bool    m_clear_ensemble_buffer;
 
     // Registered list.
-    ObjectList      m_object_list;
     RendererList    m_renderer_list;
 
 public:
@@ -89,7 +87,12 @@ public:
 
     void clear( void );
 
-    void registerRenderer( kvs::ObjectBase* object, kvs::glew::StochasticRendererBase* renderer );
+    void registerRenderer( kvs::glew::StochasticRendererBase* renderer );
+
+    void changeObject(
+        kvs::ObjectBase* object,
+        kvs::glew::StochasticRendererBase* renderer,
+        const bool is_delete = true );
 
     void clearEnsembleBuffer( void );
 

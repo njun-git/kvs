@@ -104,6 +104,10 @@ public:
 
 public:
 
+    virtual kvs::ObjectBase* object( void ) const = 0;
+
+    virtual void attachObject( kvs::ObjectBase* object ) = 0;
+
     virtual const RendererType rendererType( void ) const = 0;
 
     virtual void initializeShader( void ) = 0;

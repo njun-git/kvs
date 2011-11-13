@@ -19,7 +19,7 @@ StochasticLineRenderer::StochasticLineRenderer( void )
     this->initialize();
 }
 
-StochasticLineRenderer::StochasticLineRenderer( const kvs::LineObject* line )
+StochasticLineRenderer::StochasticLineRenderer( kvs::LineObject* line )
 {
     this->initialize();
     this->attachLineObject( line );
@@ -51,7 +51,7 @@ void StochasticLineRenderer::initialize( void )
     m_line_opacity = 1.0f;
 }
 
-void StochasticLineRenderer::attachLineObject( const kvs::LineObject* line )
+void StochasticLineRenderer::attachLineObject( kvs::LineObject* line )
 {
     // Check polygon object for rendering.
     if ( line->ncolors() != line->nvertices() && line->ncolors() > 1 )
@@ -68,6 +68,16 @@ void StochasticLineRenderer::attachLineObject( const kvs::LineObject* line )
 void StochasticLineRenderer::setOpacity( const unsigned char opacity )
 {
     m_line_opacity = static_cast<float>( opacity / 255.0f );
+}
+
+kvs::ObjectBase* StochasticLineRenderer::object( void ) const
+{
+    return( m_ref_line );
+}
+
+void StochasticLineRenderer::attachObject( kvs::ObjectBase* object )
+{
+    this->attachLineObject( static_cast<kvs::LineObject*>( object ) );
 }
 
 const StochasticRendererBase::RendererType StochasticLineRenderer::rendererType( void ) const

@@ -44,7 +44,7 @@ protected:
     typedef GLubyte  ColorType;
     typedef GLbyte   NormalType;
 
-    const kvs::PointObject* m_ref_particle;
+    kvs::PointObject*   m_ref_particle;
 
     kvs::glew::VertexBufferObject* m_vbo; ///< vertex buffer object (VBO) for the volume
 
@@ -72,11 +72,15 @@ public:
 
     void initialize( void );
 
-    void attachPointObject( const kvs::PointObject* point );
+    void attachPointObject( kvs::PointObject* point );
 
     void setPointSize( const float point_size );
 
 public:
+
+    kvs::ObjectBase* object( void ) const;
+
+    void attachObject( kvs::ObjectBase* object );
 
     const RendererType rendererType( void ) const;
 

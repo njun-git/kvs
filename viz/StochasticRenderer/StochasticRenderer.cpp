@@ -75,43 +75,31 @@ void StochasticRenderer::initialize( void )
 
     m_clear_ensemble_buffer = false;
 
-    m_object_list.clear();
     m_renderer_list.clear();
 }
 
 void StochasticRenderer::clear( void )
 {
-    for ( size_t i = 0; i < m_object_list.size(); i++ )
-    {
-        kvs::ObjectBase* object = m_object_list[i];
-        if ( object )
-        {
-            delete object;
-            object = NULL;
-        }
-    }
     for ( size_t i = 0; i < m_renderer_list.size(); i++ )
     {
         kvs::glew::StochasticRendererBase* renderer = m_renderer_list[i];
         if ( renderer )
         {
+            kvs::ObjectBase* object = renderer->object();
+            if ( object )
+            {
+                delete object;
+                object = NULL;
+            }
             delete renderer;
             renderer = NULL;
         }
     }
-    m_object_list.clear();
     m_renderer_list.clear();
 }
 
-void StochasticRenderer::registerRenderer( kvs::ObjectBase* object, kvs::glew::StochasticRendererBase* renderer )
+void StochasticRenderer::registerRenderer( kvs::glew::StochasticRendererBase* renderer )
 {
-    bool has_object = false;
-    for ( size_t i = 0; i < m_object_list.size(); i++ )
-    {
-        if ( m_object_list[i] == object ) has_object = true;
-    }
-    if ( !has_object ) m_object_list.push_back( object );
-
     bool has_renderer = false;
     for ( size_t i = 0; i < m_renderer_list.size(); i++ )
     {
@@ -120,6 +108,34 @@ void StochasticRenderer::registerRenderer( kvs::ObjectBase* object, kvs::glew::S
     if ( !has_renderer ) m_renderer_list.push_back( renderer );
 
     std::sort( m_renderer_list.begin(), m_renderer_list.end(), ::SortingByRendererType() );
+}
+
+void StochasticRenderer::changeObject(
+    kvs::ObjectBase* object,
+    kvs::glew::StochasticRendererBase* renderer,
+    const bool is_delete )
+{
+    bool has_renderer = false;
+    for ( size_t i = 0; i < m_renderer_list.size(); i++ )
+    {
+        if ( m_renderer_list[i] == renderer ) has_renderer = true;
+    }
+
+    if ( has_renderer )
+    {
+        if ( is_delete )
+        {
+            kvs::ObjectBase* old_object = renderer->object();
+            if ( old_object )
+            {
+                delete old_object;
+                old_object = NULL;
+            }
+        }
+        renderer->attachObject( object );
+        renderer->createVertexBuffer();
+        this->clearEnsembleBuffer();
+    }
 }
 
 void StochasticRenderer::clearEnsembleBuffer( void )

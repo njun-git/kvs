@@ -40,7 +40,7 @@ protected:
     typedef GLuint   ConnectType;
 
     // Reference only.
-    const kvs::LineObject*  m_ref_line;
+    kvs::LineObject* m_ref_line;
 
     kvs::glew::VertexBufferObject   m_vbo;
     kvs::glew::IndexBufferObject    m_ibo;
@@ -57,7 +57,7 @@ public:
 
     StochasticLineRenderer( void );
 
-    StochasticLineRenderer( const kvs::LineObject* line );
+    StochasticLineRenderer( kvs::LineObject* line );
 
     virtual ~StochasticLineRenderer( void );
 
@@ -69,11 +69,15 @@ public:
 
     void initialize( void );
 
-    void attachLineObject( const kvs::LineObject* line );
+    void attachLineObject( kvs::LineObject* line );
 
     void setOpacity( const unsigned char opacity );
 
 public:
+
+    kvs::ObjectBase* object( void ) const;
+
+    void attachObject( kvs::ObjectBase* object );
 
     const RendererType rendererType( void ) const;
 

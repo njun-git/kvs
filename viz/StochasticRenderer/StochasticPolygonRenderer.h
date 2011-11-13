@@ -41,7 +41,7 @@ protected:
     typedef GLuint   ConnectType;
 
     // Reference only.
-    const kvs::PolygonObject* m_ref_polygon;
+    kvs::PolygonObject* m_ref_polygon;
 
     kvs::glew::VertexBufferObject   m_vbo;
     kvs::glew::IndexBufferObject    m_ibo;
@@ -59,7 +59,7 @@ public:
 
     StochasticPolygonRenderer( void );
 
-    StochasticPolygonRenderer( const kvs::PolygonObject* polygon );
+    StochasticPolygonRenderer( kvs::PolygonObject* polygon );
 
     virtual ~StochasticPolygonRenderer( void );
 
@@ -71,11 +71,15 @@ public:
 
     void initialize( void );
 
-    void attachPolygonObject( const kvs::PolygonObject* polygon );
+    void attachPolygonObject( kvs::PolygonObject* polygon );
 
     void setPolygonOffset( const float polygon_offset );
 
 public:
+
+    kvs::ObjectBase* object( void ) const;
+
+    void attachObject( kvs::ObjectBase* object );
 
     const RendererType rendererType( void ) const;
 

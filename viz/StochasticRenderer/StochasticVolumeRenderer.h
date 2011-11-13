@@ -50,7 +50,7 @@ protected:
     typedef GLuint   ConnectType;
 
     // Reference only.
-    const kvs::UnstructuredVolumeObject* m_ref_volume;
+    kvs::UnstructuredVolumeObject*  m_ref_volume;
 
     // Transfer function for volume rendering.
     kvs::TransferFunction           m_tfunc;
@@ -81,7 +81,7 @@ public:
 
     StochasticVolumeRenderer( void );
 
-    StochasticVolumeRenderer( const kvs::UnstructuredVolumeObject* volume, const size_t nsteps = 1 );
+    StochasticVolumeRenderer( kvs::UnstructuredVolumeObject* volume, const size_t nsteps = 1 );
 
     virtual ~StochasticVolumeRenderer( void );
 
@@ -93,7 +93,7 @@ public:
 
     void initialize( void );
 
-    void attachVolumeObject( const kvs::UnstructuredVolumeObject* volume );
+    void attachVolumeObject( kvs::UnstructuredVolumeObject* volume );
 
     void setNSteps( const size_t nsteps );
 
@@ -110,6 +110,10 @@ public:
     kvs::TransferFunction& transferFunction( void );
 
 public:
+
+    kvs::ObjectBase* object( void ) const;
+
+    void attachObject( kvs::ObjectBase* object );
 
     const RendererType rendererType( void ) const;
 
