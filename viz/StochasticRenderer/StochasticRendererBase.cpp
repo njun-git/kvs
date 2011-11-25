@@ -34,6 +34,8 @@ void StochasticRendererBase::initialize( void )
 
     m_enable_shading = true;
     m_shader = NULL;
+
+    m_update_flag = false;
 }
 
 void StochasticRendererBase::clear( void )
@@ -66,6 +68,16 @@ void StochasticRendererBase::disableShading( void )
     m_enable_shading = false;
 }
 
+void StochasticRendererBase::enableUpdateFlag( void )
+{
+    m_update_flag = true;
+}
+
+void StochasticRendererBase::disableUpdateFlag( void )
+{
+    m_update_flag = false;
+}
+
 void StochasticRendererBase::setRandomTexture( const kvs::Texture2D& random_texture )
 {
     m_random_texture = random_texture;
@@ -74,6 +86,11 @@ void StochasticRendererBase::setRandomTexture( const kvs::Texture2D& random_text
 const bool StochasticRendererBase::isEnabledShading( void ) const
 {
     return( m_enable_shading );
+}
+
+const bool StochasticRendererBase::isUpdate( void ) const
+{
+    return( m_update_flag );
 }
 
 void StochasticRendererBase::create_shaders(

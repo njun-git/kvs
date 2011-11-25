@@ -133,7 +133,7 @@ void StochasticRenderer::changeObject(
             }
         }
         renderer->attachObject( object );
-        renderer->createVertexBuffer();
+        renderer->enableUpdateFlag();
         this->clearEnsembleBuffer();
     }
 }
@@ -234,7 +234,15 @@ void StochasticRenderer::create_image( const kvs::Camera* camera, const kvs::Lig
         retain_ensemble_buffer = false;
     }
 
-    // Draw objects.
+    for ( size_t i = 0; i < m_renderer_list.size(); i++ )
+    {
+        if ( m_renderer_list[i]->isUpdate() )
+        {
+            m_renderer_list[i]->createVertexBuffer();
+            m_renderer_list[i]->disableUpdateFlag();
+        }
+    }
+
     const size_t repeat_count = coarse_level;
     if ( !retain_ensemble_buffer || m_clear_ensemble_buffer )
     {
@@ -246,6 +254,7 @@ void StochasticRenderer::create_image( const kvs::Camera* camera, const kvs::Lig
         }
     }
 
+    // Draw objects.
     for ( size_t rp = 0; rp < repeat_count; rp++ )
     {
         m_framebuffer.bind();

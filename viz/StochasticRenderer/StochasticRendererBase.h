@@ -66,6 +66,9 @@ protected:
     // GLSL shader program.
     kvs::glew::ProgramObject    m_shader_program;
 
+    // Update flag.
+    bool        m_update_flag;
+
 public:
 
     StochasticRendererBase( void );
@@ -96,11 +99,17 @@ public:
 
     void disableShading( void );
 
+    void enableUpdateFlag( void );
+
+    void disableUpdateFlag( void );
+
     void setRandomTexture( const kvs::Texture2D& random_texture );
 
 public:
 
     const bool isEnabledShading( void ) const;
+
+    const bool isUpdate( void ) const;
 
 public:
 
