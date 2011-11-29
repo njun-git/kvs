@@ -16,6 +16,10 @@
 #include <kvs/PolygonImporter>
 #include <kvs/LineImporter>
 #include <kvs/PointImporter>
+
+#include <kvs/Time>
+#include <kvs/Bmp>
+#include <kvs/Camera>
 #include <kvs/RGBFormulae>
 
 #include "NullObject.h"
@@ -90,8 +94,27 @@ class KeyPressEvent : public kvs::KeyPressEventListener
     {
         switch ( event->key() )
         {
-        case kvs::Key::o: screen()->controlTarget() = kvs::ScreenBase::TargetObject; break;
-        case kvs::Key::l: screen()->controlTarget() = kvs::ScreenBase::TargetLight; break;
+            case kvs::Key::o: screen()->controlTarget() = kvs::ScreenBase::TargetObject; break;
+            case kvs::Key::l: screen()->controlTarget() = kvs::ScreenBase::TargetLight; break;
+            case kvs::Key::s:
+            {
+                kvs::Time now; now.now();
+                std::string filename( std::string( "ScreenShot_" ) + now.toString( "" ) + std::string( ".bmp" ) );
+                kvs::Camera camera;
+                kvs::ColorImage screen_shot = camera.snapshot();
+
+                kvs::Bmp* bmp = new kvs::Bmp( screen_shot.width(), screen_shot.height(), screen_shot.data() );
+                if ( bmp->write( filename ) )
+                {
+                    std::cout << "Write screen shot to " << filename << std::endl;
+                }
+                else
+                {
+                    kvsMessageError( "Cannot write image." );
+                }
+                delete bmp;
+                break;
+            }
             default: break;
         }
     }
