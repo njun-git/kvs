@@ -44,15 +44,9 @@ kvs::AnyValueArray Combine2AnyValueArray(
 
 int main( int argc, char** argv )
 {
-    if ( argc < 5 )
+    if ( argc < 4 )
     {
-        kvsMessageError( "Please input : ./Combine2Volume [file path volume1] [file path volume2] > [output file path]" );
-        return( - 1 );
-    }
-
-    if ( std::string( argv[3] ) != ">" )
-    {
-        kvsMessageError( "Please input : ./Combine2Volume [file path volume1] [file path volume2] > [output file path]" );
+        kvsMessageError( "Please input : ./Combine2Volume [file path volume1] [file path volume2] [output file path]" );
         return( - 1 );
     }
 
@@ -159,7 +153,10 @@ int main( int argc, char** argv )
 
     kvs::KVSMLObjectUnstructuredVolume* kvsml = new kvs::UnstructuredVolumeExporter<kvs::KVSMLObjectUnstructuredVolume>( volume12 );
     kvsml->setWritingDataType( kvs::KVSMLObjectUnstructuredVolume::ExternalBinary );
-    kvsml->write( argv[4] );
+    if ( kvsml->write( argv[3] ) )
+    {
+        std::cout << "Write combined volume data to " << argv[3] << std::endl;
+    }
 
     delete volume1;
     delete volume2;
