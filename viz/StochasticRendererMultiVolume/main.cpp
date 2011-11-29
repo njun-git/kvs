@@ -8,6 +8,7 @@
 
 #include <kvs/glut/Application>
 #include <kvs/glut/Screen>
+#include <kvs/glut/TransferFunctionEditor>
 
 #include <kvs/CommandLine>
 #include <kvs/UnstructuredVolumeImporter>
@@ -50,6 +51,37 @@ public:
         if( !this->parse() ) exit( EXIT_FAILURE );
     }
 
+};
+
+class TransferFunctionEditor : public kvs::glut::TransferFunctionEditor
+{
+
+private:
+
+    kvs::glew::StochasticRenderer*          m_ref_renderer;
+    kvs::glew::StochasticVolume2Renderer*   m_ref_volume_renderer;
+    size_t                                  m_index;
+
+public:
+
+    TransferFunctionEditor(
+        kvs::glut::Screen* screen,
+        kvs::glew::StochasticRenderer* renderer,
+        kvs::glew::StochasticVolume2Renderer* volume_renderer,
+        size_t index ) :
+        kvs::glut::TransferFunctionEditor( screen ),
+        m_ref_renderer( renderer ),
+        m_ref_volume_renderer( volume_renderer ),
+        m_index( index )
+    {
+    }
+
+    void apply( void )
+    {
+        m_ref_volume_renderer->setTransferFunction( transferFunction(), m_index );
+        m_ref_renderer->clearEnsembleBuffer();
+        screen()->redraw();
+    }
 };
 
 class KeyPressEvent : public kvs::KeyPressEventListener
@@ -98,8 +130,7 @@ int main( int argc, char** argv )
         {
             kvs::glew::StochasticVolume2Renderer* volume_renderer = new kvs::glew::StochasticVolume2Renderer( volume );
             if ( arg.hasOption( "e" ) ) volume_renderer->setEdgeSize( arg.optionValue<float>( "e" ) );
-            if ( arg.hasOption( "DisableShading" ) ) volume_renderer->disableShading();
-            else                                     volume_renderer->setShader( kvs::Shader::BlinnPhong() );
+            volume_renderer->disableShading();
 
             if ( arg.hasOption( "tfunc" ) )
             {
@@ -108,8 +139,21 @@ int main( int argc, char** argv )
             }
 
             kvs::TransferFunction tfunc;
-            tfunc.setColorMap( kvs::RGBFormulae::AFMHot( 256 ) );
+            tfunc.setColorMap( kvs::RGBFormulae::PM3D( 256 ) );
             volume_renderer->setTransferFunction( tfunc, 1 );
+
+            TransferFunctionEditor* editor1 = new TransferFunctionEditor( &screen, renderer, volume_renderer, 0 );
+            editor1->setTitle( "TransferFunctionEditor 1" );
+            editor1->setVolumeObject( volume );
+            editor1->setTransferFunction( volume_renderer->transferFunction( 0 ) );
+
+            TransferFunctionEditor* editor2 = new TransferFunctionEditor( &screen, renderer, volume_renderer, 1 );
+            editor2->setTitle( "TransferFunctionEditor 2" );
+            editor2->setVolumeObject( volume );
+            editor2->setTransferFunction( volume_renderer->transferFunction( 1 ) );
+
+            editor1->show();
+            editor2->show();
 
             renderer->registerRenderer( volume_renderer );
         }

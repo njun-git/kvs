@@ -597,9 +597,12 @@ void StochasticVolume2Renderer::create_preintegration_table( void )
 {
     for ( size_t i = 0; i < 2; i++ )
     {
-        m_table[i].setTransferFunction( m_tfunc[i], 0.0f, 1.0f );
-        m_table[i].create( m_edge_size );
-        m_table[i].download();
+        if ( !m_table[i].isDownloaded() )
+        {
+            m_table[i].setTransferFunction( m_tfunc[i], 0.0f, 1.0f );
+            m_table[i].create( m_edge_size );
+            m_table[i].download();
+        }
     }
 }
 
