@@ -15,6 +15,7 @@
 #include <kvs/PolygonImporter>
 #include <kvs/LineImporter>
 #include <kvs/PointImporter>
+#include <kvs/Isosurface>
 
 #include "NullObject.h"
 #include "StochasticRenderer.h"
@@ -68,7 +69,7 @@ int main( int argc, char** argv )
     Argument arg( argc, argv );
     kvs::glut::Application app( argc, argv );
     kvs::glut::Screen screen( &app );
-    screen.setTitle( "StochasticRenderer" );
+    screen.setTitle( "StochasticRendererForIsosurface" );
 
     KeyPressEvent key_press_event;
     screen.addKeyPressEvent( &key_press_event );
@@ -104,6 +105,18 @@ int main( int argc, char** argv )
         }
         renderer->registerRenderer( volume_renderer );
         if ( !null ) null = new kvs::NullObject( volume );
+
+        // Isosurface.
+        const float iso_value = 0.5f * ( volume->maxValue() - volume->minValue() ) + volume->minValue();
+        kvs::PolygonObject* iso = new kvs::Isosurface( volume, iso_value );
+        kvs::PolygonObject* polygon = new kvs::PolygonToPolygon( iso );
+        delete iso;
+
+        kvs::glew::StochasticPolygonRenderer* polygon_renderer = new kvs::glew::StochasticPolygonRenderer( polygon );
+        polygon_renderer->setShader( kvs::Shader::BlinnPhong() );
+        if ( arg.hasOption( "DisableShading" ) ) polygon_renderer->disableShading();
+
+        renderer->registerRenderer( polygon_renderer );
     }
 
     if ( arg.hasOption( "polygon" ) )
