@@ -1,0 +1,14 @@
+<KVSML>
+  <TransferFunction resolution="256">
+    <ColorMap>
+      <ColorMapValue s="0"   r="255" g="0"   b="0"/>
+      <ColorMapValue s="255" r="255" g="0"   b="0"/>
+    </ColorMap>
+    <OpacityMap>
+      <OpacityMapValue s="0"   a="0"/>
+      <OpacityMapValue s="168" a="0"/>
+      <OpacityMapValue s="216" a="1.0"/>
+      <OpacityMapValue s="255" a="1"/>
+    </OpacityMap>
+  </TransferFunction>
+</KVSML>

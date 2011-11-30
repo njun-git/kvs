@@ -95,22 +95,21 @@ float distance_to_texture_coord( const in float distance )
 
 void main( void )
 {
-    vec3 lutcoord;
     vec4 lutdata;
 
     vec2 depth_coord = gl_FragCoord.xy * screen_scale_inv;
     float depth = texture2D( depth_texture, depth_coord ).x;
     float depth_distance = distance_to_depth( distance ) * gl_FragCoord.w;
-    if ( gl_FragCoord.z < depth && depth < gl_FragCoord.z + depth_distance && depth < 1.0 )
+    if ( gl_FragCoord.z <= depth && depth <= gl_FragCoord.z + depth_distance && depth < 1.0 )
     {
         float ratio = ( depth - gl_FragCoord.z ) / depth_distance;
         float new_distance = ratio * distance;
-        lutcoord = vec3( scalar_front, ( 1.0 - ratio ) * scalar_front + ratio * scalar_back, new_distance );
+        vec3 lutcoord = vec3( scalar_front, ( 1.0 - ratio ) * scalar_front + ratio * scalar_back, new_distance );
         lutdata = texture3D( preintegration_texture, lutcoord );
     }
     else
     {
-        lutcoord = vec3( scalar_front, scalar_back, distance );
+        vec3 lutcoord = vec3( scalar_front, scalar_back, distance );
         lutdata = texture3D( preintegration_texture, lutcoord );
     }
 
