@@ -77,6 +77,10 @@ protected:
     size_t      m_nsteps;
     size_t      m_step;
 
+    // show flags.
+    bool        m_show_flag0;
+    bool        m_show_flag1;
+
 public:
 
     StochasticVolume2Renderer( void );
@@ -103,11 +107,17 @@ public:
 
     void setTransferFunction( const kvs::TransferFunction& tfunc, const size_t index = 0 );
 
+    void show( const size_t index );
+
+    void hide( const size_t index );
+
 public:
 
     const kvs::TransferFunction& transferFunction( const size_t index = 0 ) const;
 
     kvs::TransferFunction& transferFunction( const size_t index = 0 );
+
+    const bool isShown( const size_t index );
 
 public:
 

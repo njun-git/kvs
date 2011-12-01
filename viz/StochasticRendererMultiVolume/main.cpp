@@ -88,6 +88,9 @@ public:
     }
 };
 
+kvs::glew::StochasticRenderer* renderer = NULL;
+kvs::glew::StochasticVolume2Renderer* volume2_renderer = NULL;
+
 class KeyPressEvent : public kvs::KeyPressEventListener
 {
     void update( kvs::KeyEvent* event )
@@ -115,6 +118,48 @@ class KeyPressEvent : public kvs::KeyPressEventListener
                 delete bmp;
                 break;
             }
+            case kvs::Key::Left:
+            {
+                if ( volume2_renderer )
+                {
+                    if ( volume2_renderer->isShown( 0 ) && volume2_renderer->isShown( 1 ) )
+                    {
+                        volume2_renderer->hide( 1 );
+                    }
+                    else if ( volume2_renderer->isShown( 0 ) && !volume2_renderer->isShown( 1 ) )
+                    {
+                        volume2_renderer->hide( 0 );
+                        volume2_renderer->show( 1 );
+                    }
+                    else
+                    {
+                        volume2_renderer->show( 0 );
+                    }
+                    renderer->clearEnsembleBuffer();
+                }
+                break;
+            }
+            case kvs::Key::Right:
+            {
+                if ( volume2_renderer )
+                {
+                    if ( volume2_renderer->isShown( 0 ) && volume2_renderer->isShown( 1 ) )
+                    {
+                        volume2_renderer->hide( 0 );
+                    }
+                    else if ( !volume2_renderer->isShown( 0 ) && volume2_renderer->isShown( 1 ) )
+                    {
+                        volume2_renderer->hide( 1 );
+                        volume2_renderer->show( 0 );
+                    }
+                    else
+                    {
+                        volume2_renderer->show( 1 );
+                    }
+                    renderer->clearEnsembleBuffer();
+                }
+                break;
+            }
             default: break;
         }
     }
@@ -133,7 +178,7 @@ int main( int argc, char** argv )
     screen.show();
 
     const size_t repeat_level = arg.hasOption( "r" ) ? arg.optionValue<size_t>( "r" ) : 1;
-    kvs::glew::StochasticRenderer* renderer = new kvs::glew::StochasticRenderer( repeat_level );
+    renderer = new kvs::glew::StochasticRenderer( repeat_level );
     renderer->enableLODControl();
 
     kvs::NullObject* null = NULL;
@@ -151,34 +196,34 @@ int main( int argc, char** argv )
 
         if ( volume->veclen() == 2 )
         {
-            kvs::glew::StochasticVolume2Renderer* volume_renderer = new kvs::glew::StochasticVolume2Renderer( volume );
-            if ( arg.hasOption( "e" ) ) volume_renderer->setEdgeSize( arg.optionValue<float>( "e" ) );
-            volume_renderer->disableShading();
+            volume2_renderer = new kvs::glew::StochasticVolume2Renderer( volume );
+            if ( arg.hasOption( "e" ) ) volume2_renderer->setEdgeSize( arg.optionValue<float>( "e" ) );
+            volume2_renderer->disableShading();
 
             if ( arg.hasOption( "tfunc" ) )
             {
                 kvs::TransferFunction tfunc( arg.optionValue<std::string>( "tfunc" ) );
-                volume_renderer->setTransferFunction( tfunc );
+                volume2_renderer->setTransferFunction( tfunc );
             }
 
             kvs::TransferFunction tfunc;
             tfunc.setColorMap( kvs::RGBFormulae::PM3D( 256 ) );
-            volume_renderer->setTransferFunction( tfunc, 1 );
+            volume2_renderer->setTransferFunction( tfunc, 1 );
 
-            TransferFunctionEditor* editor1 = new TransferFunctionEditor( &screen, renderer, volume_renderer, 0 );
+            TransferFunctionEditor* editor1 = new TransferFunctionEditor( &screen, renderer, volume2_renderer, 0 );
             editor1->setTitle( "TransferFunctionEditor 1" );
             editor1->setVolumeObject( volume );
-            editor1->setTransferFunction( volume_renderer->transferFunction( 0 ) );
+            editor1->setTransferFunction( volume2_renderer->transferFunction( 0 ) );
 
-            TransferFunctionEditor* editor2 = new TransferFunctionEditor( &screen, renderer, volume_renderer, 1 );
+            TransferFunctionEditor* editor2 = new TransferFunctionEditor( &screen, renderer, volume2_renderer, 1 );
             editor2->setTitle( "TransferFunctionEditor 2" );
             editor2->setVolumeObject( volume );
-            editor2->setTransferFunction( volume_renderer->transferFunction( 1 ) );
+            editor2->setTransferFunction( volume2_renderer->transferFunction( 1 ) );
 
             editor1->show();
             editor2->show();
 
-            renderer->registerRenderer( volume_renderer );
+            renderer->registerRenderer( volume2_renderer );
         }
         else
         {

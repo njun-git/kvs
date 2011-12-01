@@ -288,6 +288,9 @@ void StochasticVolume2Renderer::initialize( void )
 
     m_nsteps = 1;
     m_step = 0;
+
+    m_show_flag0 = true;
+    m_show_flag1 = true;
 }
 
 void StochasticVolume2Renderer::attachVolumeObject( kvs::UnstructuredVolumeObject* volume )
@@ -332,6 +335,18 @@ void StochasticVolume2Renderer::setTransferFunction( const kvs::TransferFunction
     }
 }
 
+void StochasticVolume2Renderer::show( const size_t index )
+{
+    if ( index == 0 ) m_show_flag0 = true;
+    else              m_show_flag1 = true;
+}
+
+void StochasticVolume2Renderer::hide( const size_t index )
+{
+    if ( index == 0 ) m_show_flag0 = false;
+    else              m_show_flag1 = false;
+}
+
 const kvs::TransferFunction& StochasticVolume2Renderer::transferFunction( const size_t index ) const
 {
     return( m_tfunc[index] );
@@ -340,6 +355,12 @@ const kvs::TransferFunction& StochasticVolume2Renderer::transferFunction( const 
 kvs::TransferFunction& StochasticVolume2Renderer::transferFunction( const size_t index )
 {
     return( m_tfunc[index] );
+}
+
+const bool StochasticVolume2Renderer::isShown( const size_t index )
+{
+    if ( index == 0 ) return( m_show_flag0 );
+    else              return( m_show_flag1 );
 }
 
 kvs::ObjectBase* StochasticVolume2Renderer::object( void ) const
@@ -761,6 +782,14 @@ void StochasticVolume2Renderer::setup_shader( const float modelview_matrix[16] )
     m_shader_program.setUniformValuef( "preintegration_scale_offset",
         1.0 - 1.0 / m_table[0].sizeDepth() / m_edge_size,
         1.0 / ( 2.0 * m_table[0].sizeDepth() ) );
+
+    int start_volume = 0;
+    int end_volume = 2;
+    if ( !m_show_flag0 ) start_volume++;
+    if ( !m_show_flag1 ) end_volume--;
+
+    m_shader_program.setUniformValuei( "start_volume", start_volume );
+    m_shader_program.setUniformValuei( "end_volume", end_volume );
 
     m_shader_program.setUniformValuei( "preintegration_texture0", 0 );
     m_shader_program.setUniformValuei( "preintegration_texture1", 1 );

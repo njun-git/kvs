@@ -25,6 +25,9 @@ uniform vec2 preintegration_scale_offset;
 uniform float random_texture_size_inv;
 uniform vec2 random_offset;
 
+uniform int start_volume;
+uniform int end_volume;
+
 struct Shading
 {
     float Ka; // ambient
@@ -88,7 +91,7 @@ void main( void )
     int accept = 0;
     vec3 accum_color = vec3( 0.0, 0.0, 0.0 );
 
-    for ( int i = 0; i < 2; i++ )
+    for ( int i = start_volume; i < end_volume; i++ )
     {
         vec4 lutdata;
         if ( i == 0 )
