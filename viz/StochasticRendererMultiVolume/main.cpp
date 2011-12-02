@@ -99,6 +99,11 @@ class KeyPressEvent : public kvs::KeyPressEventListener
         {
             case kvs::Key::o: screen()->controlTarget() = kvs::ScreenBase::TargetObject; break;
             case kvs::Key::l: screen()->controlTarget() = kvs::ScreenBase::TargetLight; break;
+            case kvs::Key::f:
+            {
+                const kvs::RendererBase* r = screen()->rendererManager()->renderer();
+                std::cout << r->timer().msec() << std::endl; break;
+            }
             case kvs::Key::s:
             {
                 kvs::Time now; now.now();
