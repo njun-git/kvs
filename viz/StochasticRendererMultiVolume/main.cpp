@@ -47,7 +47,8 @@ public:
         add_option( "point", "[string] kvs::PointObject file path. ( optional )", 1, false );
         add_option( "polygon", "[string] kvs::PolygonObject file path. ( optional )", 1, false );
         add_option( "line", "[string] kvs::LineObject file path. ( optional )", 1, false );
-        add_option( "tfunc", "[string] kvs::TransferFunction file path. ( optional )", 1, false );
+        add_option( "tfunc1", "[string] kvs::TransferFunction file path. ( optional )", 1, false );
+        add_option( "tfunc2", "[string] kvs::TransferFunction file path. ( optional )", 1, false );
 
         add_option( "e", "[float]  Edge size of volume. ( default : 1 )", 1, false );
         add_option( "DisableShading", "Disable shading. ( default : eable shading )", 0, false );
@@ -205,15 +206,23 @@ int main( int argc, char** argv )
             if ( arg.hasOption( "e" ) ) volume2_renderer->setEdgeSize( arg.optionValue<float>( "e" ) );
             volume2_renderer->disableShading();
 
-            if ( arg.hasOption( "tfunc" ) )
+            if ( arg.hasOption( "tfunc1" ) )
             {
-                kvs::TransferFunction tfunc( arg.optionValue<std::string>( "tfunc" ) );
-                volume2_renderer->setTransferFunction( tfunc );
+                kvs::TransferFunction tfunc( arg.optionValue<std::string>( "tfunc1" ) );
+                volume2_renderer->setTransferFunction( tfunc, 0 );
             }
 
-            kvs::TransferFunction tfunc;
-            tfunc.setColorMap( kvs::RGBFormulae::PM3D( 256 ) );
-            volume2_renderer->setTransferFunction( tfunc, 1 );
+            if ( arg.hasOption( "tfunc2" ) )
+            {
+                kvs::TransferFunction tfunc( arg.optionValue<std::string>( "tfunc2" ) );
+                volume2_renderer->setTransferFunction( tfunc, 1 );
+            }
+            else
+            {
+                kvs::TransferFunction tfunc;
+                tfunc.setColorMap( kvs::RGBFormulae::PM3D( 256 ) );
+                volume2_renderer->setTransferFunction( tfunc, 1 );
+            }
 
             TransferFunctionEditor* editor1 = new TransferFunctionEditor( &screen, renderer, volume2_renderer, 0 );
             editor1->setTitle( "TransferFunctionEditor 1" );
