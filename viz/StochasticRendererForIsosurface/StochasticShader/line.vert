@@ -8,6 +8,7 @@
 
 varying vec3 position;
 varying vec2 id;
+varying float depth;
 
 attribute vec2 identifier;
 
@@ -17,5 +18,6 @@ void main( void )
     gl_FrontColor = gl_Color;
 
     position = ( gl_ModelViewMatrix * gl_Vertex ).xyz;
+    depth = gl_Position.z / gl_Position.w;
     id = identifier;
 }

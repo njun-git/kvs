@@ -71,4 +71,24 @@ const kvs::ObjectBase::ObjectType NullObject::objectType( void ) const
     return( kvs::ObjectBase::Geometry );
 }
 
+void NullObject::update( const kvs::ObjectBase* object )
+{
+    const kvs::Vector3f o_min_coord = object->minObjectCoord();
+    const kvs::Vector3f o_max_coord = object->maxObjectCoord();
+
+    kvs::Vector3f n_min_coord = this->minObjectCoord();
+    kvs::Vector3f n_max_coord = this->maxObjectCoord();
+
+    if ( o_min_coord.x() < n_min_coord.x() ) n_min_coord.x() = o_min_coord.x();
+    if ( o_min_coord.y() < n_min_coord.y() ) n_min_coord.y() = o_min_coord.y();
+    if ( o_min_coord.z() < n_min_coord.z() ) n_min_coord.z() = o_min_coord.z();
+
+    if ( o_max_coord.x() > n_max_coord.x() ) n_max_coord.x() = o_max_coord.x();
+    if ( o_max_coord.y() > n_max_coord.y() ) n_max_coord.y() = o_max_coord.y();
+    if ( o_max_coord.z() > n_max_coord.z() ) n_max_coord.z() = o_max_coord.z();
+
+    BaseClass::setMinMaxObjectCoords( n_min_coord, n_max_coord );
+    BaseClass::setMinMaxExternalCoords( n_min_coord, n_max_coord );
+}
+
 }

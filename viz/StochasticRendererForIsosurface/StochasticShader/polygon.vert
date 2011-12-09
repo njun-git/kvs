@@ -10,6 +10,7 @@
 varying vec3 position;
 varying vec3 normal;
 varying vec2 id;
+varying float depth;
 
 attribute vec2 identifier;
 
@@ -23,5 +24,6 @@ void main( void )
 
     position = ( gl_ModelViewMatrix * gl_Vertex ).xyz;
     normal = ( gl_NormalMatrix * gl_Normal ).xyz;
+    depth = gl_Position.z / gl_Position.w;
     id = identifier;
 }

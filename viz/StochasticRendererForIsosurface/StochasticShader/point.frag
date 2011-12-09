@@ -10,6 +10,7 @@ varying vec3  position;
 varying vec3  normal;
 varying vec2  center;
 varying float radius;
+varying float depth;
 
 struct Shading
 {
@@ -101,4 +102,5 @@ void main( void )
 
     gl_FragColor.xyz = shaded_color;
     gl_FragColor.w = 1.0;
+    gl_FragDepth = depth;
 }

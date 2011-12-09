@@ -8,6 +8,7 @@
 
 varying vec3 position;
 varying vec2 id;
+varying float depth;
 
 uniform sampler2D random_texture;
 
@@ -33,4 +34,5 @@ void main( void )
     }
 
     gl_FragColor = vec4( gl_Color.rgb, 1.0 );
+    gl_FragDepth = depth;
 }

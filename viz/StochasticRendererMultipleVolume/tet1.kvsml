@@ -1,0 +1,29 @@
+<KVSML>
+  <Object type="UnstructuredVolumeObject">
+    <!-- aaa: tetrahedra, quadratic tetrahedra, hexahedra, quadratic hexahedra -->
+    <UnstructuredVolumeObject cell_type="tetrahedra">
+      <Node nnodes="4">
+        <Value veclen="1">
+          <DataArray type="float">
+            0 0 0 1
+          </DataArray>
+        </Value>
+        <Coord>
+          <DataArray type="float">
+             1  1  1
+            -1 -1  1
+             1 -1 -1
+            -1  1 -1
+          </DataArray>
+        </Coord>
+      </Node>
+      <Cell ncells="1">
+        <Connection>
+          <DataArray type="uint">
+            0 1 2 3
+          </DataArray>
+        </Connection>
+      </Cell>
+    </UnstructuredVolumeObject>
+  </Object>
+</KVSML>

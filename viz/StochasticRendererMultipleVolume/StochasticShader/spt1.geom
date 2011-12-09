@@ -41,7 +41,7 @@ int direction( in int p0, in int p1, in int p2 )
 
 void emitExistPoint( const in int index, const in float dist )
 {
-    gl_Position = gl_PositionIn[index]; 
+    gl_Position = gl_PositionIn[index];
     position    = position_in[index].xyz;
     depth_front = gl_PositionIn[index].z / gl_PositionIn[index].w;
     depth_back  = depth_front;
@@ -51,6 +51,7 @@ void emitExistPoint( const in int index, const in float dist )
     scalar_front = value_in[index];
     scalar_back  = value_in[index];
     distance     = dist;
+
     EmitVertex();
 }
 
@@ -73,6 +74,7 @@ void emitNewPoint(
     scalar_front = center_scalar_front;
     scalar_back  = center_scalar_back;
     distance     = center_distance;
+
     EmitVertex();
 }
 
@@ -250,12 +252,12 @@ void calculate_across_line_to_line_2D( out float r1, out float r3, in int p0, in
 */ 
 void create_type_1( in int p0, in int p1, in int p2, in int p3 )
 {
-    float r2, r3;
-    calculate_across_triangle_to_line_2D( r2, r3, p0, p1, p2, p3 );
-    perspective_correct_triangle( r2, r3, p0, p1, p2, p3 );
+   float r2, r3;
+   calculate_across_triangle_to_line_2D( r2, r3, p0, p1, p2, p3 );
+   perspective_correct_triangle( r2, r3, p0, p1, p2, p3 );
 
-    vec4  p123 = position_in[p1] + ( position_in[p2]  - position_in[p1] ) * r2 + ( position_in[p3] - position_in[p1] ) * r3;
-    float s123 = value_in[p1] + ( value_in[p2] - value_in[p1] ) * r2 + ( value_in[p3] - value_in[p1] ) * r3;
+   vec4  p123 = position_in[p1] + ( position_in[p2]  - position_in[p1] ) * r2 + ( position_in[p3] - position_in[p1] ) * r3;
+   float s123 = value_in[p1] + ( value_in[p2] - value_in[p1] ) * r2 + ( value_in[p3] - value_in[p1] ) * r3;
 
     vec4 center_position;
     vec3 center_position_3D;
@@ -266,34 +268,34 @@ void create_type_1( in int p0, in int p1, in int p2, in int p3 )
 
     float a_depth;
 
-    if ( length( p123.z ) < length( position_in[p0].z ) )
-    {
-        vec4 tmp = gl_PositionIn[p0];
-        a_depth = tmp.z / tmp.w;
+   if ( length( p123.z ) < length( position_in[p0].z ) )
+   {
+       vec4 tmp = gl_PositionIn[p0];
+       a_depth = tmp.z / tmp.w;
 
-        center_position = gl_ProjectionMatrix * p123;
-        center_position_3D = p123.xyz;
+       center_position = gl_ProjectionMatrix * p123;
+       center_position_3D = p123.xyz;
 
-        center_normal_3D = n123.xyz;
+       center_normal_3D = n123.xyz;
 
-        center_scalar_front = s123;
-        center_scalar_back = value_in[p0];
-    }
-    else
-    {
-        vec4 tmp = gl_ProjectionMatrix * p123;
-        a_depth = tmp.z / tmp.w;
+       center_scalar_front = s123;
+       center_scalar_back = value_in[p0];
+   }
+   else
+   {
+       vec4 tmp = gl_ProjectionMatrix * p123;
+       a_depth = tmp.z / tmp.w;
 
-        center_position = gl_PositionIn[p0];
-        center_position_3D = position_in[p0].xyz;
+       center_position = gl_PositionIn[p0];
+       center_position_3D = position_in[p0].xyz;
 
-        center_normal_3D = normal_in[p0].xyz;
+       center_normal_3D = normal_in[p0].xyz;
 
-        center_scalar_front = value_in[p0];
-        center_scalar_back = s123;
-    }
+       center_scalar_front = value_in[p0];
+       center_scalar_back = s123;
+   }
 
-    float center_distance = distance_to_texture_coord( length( position_in[p0] - p123 ) );
+   float center_distance = distance_to_texture_coord( length( position_in[p0] - p123 ) );
 
     // p1-p2-C p2-C-p3 C-p3-p1
     emitExistPoint( p1, 0.0 );
@@ -319,55 +321,56 @@ void create_type_1( in int p0, in int p1, in int p2, in int p3 )
 */
 void create_type_2( in int p0, in int p1, in int p2, in int p3 )
 {
-    float r1, r3;
-    calculate_across_line_to_line_2D( r1, r3, p0, p1, p2, p3 );
-    perspective_correct_line( r1, p0, p1 );
-    perspective_correct_line( r3, p2, p3 );
 
-    vec4  p01 = position_in[p0] + ( position_in[p1] - position_in[p0] ) * r1;
-    float s01 = value_in[p0] + ( value_in[p1] - value_in[p0] ) * r1;
+   float r1, r3;
+   calculate_across_line_to_line_2D( r1, r3, p0, p1, p2, p3 );
+   perspective_correct_line( r1, p0, p1 );
+   perspective_correct_line( r3, p2, p3 );
 
-    vec4  p23 = position_in[p2] + ( position_in[p3]  - position_in[p2] ) * r3;
-    float s23 = value_in[p2] + ( value_in[p3] - value_in[p2] ) * r3;
+   vec4  p01 = position_in[p0] + ( position_in[p1] - position_in[p0] ) * r1;
+   float s01 = value_in[p0] + ( value_in[p1] - value_in[p0] ) * r1;
 
-    vec4 center_position;
-    vec3 center_position_3D;
-    float center_scalar_front, center_scalar_back; 
+   vec4  p23 = position_in[p2] + ( position_in[p3]  - position_in[p2] ) * r3;
+   float s23 = value_in[p2] + ( value_in[p3] - value_in[p2] ) * r3;
 
-    vec3 n01 = normal_in[p0] + ( normal_in[p1] - normal_in[p0] ) * r1;
-    vec3 n23 = normal_in[p2] + ( normal_in[p3] - normal_in[p2] ) * r3;
-    vec3 center_normal_3D;
+   vec4 center_position;
+   vec3 center_position_3D;
+   float center_scalar_front, center_scalar_back; 
+
+   vec3 n01 = normal_in[p0] + ( normal_in[p1] - normal_in[p0] ) * r1;
+   vec3 n23 = normal_in[p2] + ( normal_in[p3] - normal_in[p2] ) * r3;
+   vec3 center_normal_3D;
 
     float a_depth;
 
-    if ( length( p01.xyz ) < length( p23.xyz ) )
-    {
-        vec4 tmp = gl_ProjectionMatrix * p23;
-        a_depth = tmp.z / tmp.w;
+   if ( length( p01.xyz ) < length( p23.xyz ) )
+   {
+       vec4 tmp = gl_ProjectionMatrix * p23;
+       a_depth = tmp.z / tmp.w;
 
-        center_position = gl_ProjectionMatrix * p01;
-        center_position_3D = p01.xyz;
+       center_position = gl_ProjectionMatrix * p01;
+       center_position_3D = p01.xyz;
 
-        center_normal_3D = n01.xyz;
+       center_normal_3D = n01.xyz;
 
-        center_scalar_front = s01;
-        center_scalar_back = s23;
-    }
-    else
-    {
-        vec4 tmp = gl_ProjectionMatrix * p01;
-        a_depth = tmp.z / tmp.w;
+       center_scalar_front = s01;
+       center_scalar_back = s23;
+   }
+   else
+   {
+       vec4 tmp = gl_ProjectionMatrix * p01;
+       a_depth = tmp.z / tmp.w;
 
-        center_position = gl_ProjectionMatrix * p23;
-        center_position_3D = p23.xyz;
+       center_position = gl_ProjectionMatrix * p23;
+       center_position_3D = p23.xyz;
 
-        center_normal_3D = n23.xyz;
+       center_normal_3D = n23.xyz;
 
-        center_scalar_front = s23;
-        center_scalar_back = s01;
-    }
+       center_scalar_front = s23;
+       center_scalar_back = s01;
+   }
 
-    float center_distance = distance_to_texture_coord( length( p01.z - p23.z ) );
+   float center_distance = distance_to_texture_coord( length( p01.z - p23.z ) );
 
     // right half: p0-p2-C, p2-C-p1
     emitExistPoint( p0, 0.0 );
@@ -420,7 +423,6 @@ void create_type_3( in int p0, in int p1, in int p2, in int p3 )
 */
 void create_type_4( in int p0, in int p1, in int p2, in int p3 )
 {
-
     int pFront, pBack;
     if ( position_in[p2].z < position_in[p3].z )
     {
@@ -432,6 +434,7 @@ void create_type_4( in int p0, in int p1, in int p2, in int p3 )
         pFront = p3;
         pBack = p2;
     }
+
     float a_depth = gl_PositionIn[pBack].z / gl_PositionIn[pBack].w;
 
     float center_distance = distance_to_texture_coord( length( position_in[pBack] - position_in[pFront] ) );

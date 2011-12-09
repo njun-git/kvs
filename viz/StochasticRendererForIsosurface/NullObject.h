@@ -52,6 +52,8 @@ public:
 
     const ObjectType objectType( void ) const;
 
+    void update( const kvs::ObjectBase* object );
+
 };
 
 }

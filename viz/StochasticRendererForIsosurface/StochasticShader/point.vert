@@ -20,6 +20,7 @@ varying vec3  position;
 varying vec3  normal;
 varying vec2  center;
 varying float radius;
+varying float depth;
 
 
 float zooming( in vec4 p )
@@ -66,6 +67,7 @@ void main( void )
 
     position = vec3( gl_ModelViewMatrix * gl_Vertex );
     normal = ( gl_NormalMatrix * gl_Normal ).xyz;
+    depth = gl_Position.z / gl_Position.w;
 
     gl_PointSize = zooming( gl_Position );
 }

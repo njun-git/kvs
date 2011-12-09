@@ -10,6 +10,9 @@ varying vec3 position;
 varying vec3 normal;
 varying vec2 id;
 
+varying float depth_front;
+varying float depth_back;
+
 varying float scalar_front;
 varying float scalar_back;
 varying float distance;
@@ -97,14 +100,15 @@ void main( void )
 {
     vec4 lutdata;
 
-    vec2 depth_coord = gl_FragCoord.xy * screen_scale_inv;
-    float depth = texture2D( depth_texture, depth_coord ).x;
-    float depth_distance = distance_to_depth( distance ) * gl_FragCoord.w;
-    if ( gl_FragCoord.z <= depth && depth <= gl_FragCoord.z + depth_distance && depth < 1.0 )
+    vec2 screen_coord = gl_FragCoord.xy * screen_scale_inv;
+    float geom_d = texture2D( depth_texture, screen_coord ).x;
+
+    if ( geom_d < 1.0 &&
+         depth_front <= geom_d &&
+         geom_d <= depth_back )
     {
-        float ratio = ( depth - gl_FragCoord.z ) / depth_distance;
-        float new_distance = ratio * distance;
-        vec3 lutcoord = vec3( scalar_front, ( 1.0 - ratio ) * scalar_front + ratio * scalar_back, new_distance );
+        float ratio = ( geom_d - depth_front ) / ( depth_back - depth_front );
+        vec3 lutcoord = vec3( scalar_front, ( 1.0 - ratio ) * scalar_front + ratio * scalar_back, ratio * distance );
         lutdata = texture3D( preintegration_texture, lutcoord );
     }
     else
@@ -146,4 +150,5 @@ void main( void )
 #endif
 
     gl_FragColor = vec4( shaded_color, 1.0 );
+    gl_FragDepth = depth_front;
 }
