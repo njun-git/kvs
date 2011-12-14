@@ -81,9 +81,36 @@ public:
     {
         add_help_option();
 
+        add_option( "file", "Output file name. ( default : tfunc.kvsml )", 1, false );
+
+        add_option( "resolution", "[size_t] Resolution of transfer function. ( default : 256 )\n", 1, false );
+
+        add_option( "PM3D", "[ -rgb 7 5 15 ]. ( optional )", 0, false );
+        add_option( "GreenRedViolet", "[ -rgb 3 11 6 ]. ( optional )", 0, false );
+        add_option( "Ocean", "[ -rgb 23 28 3 ]. ( optional )", 0, false );
+        add_option( "Hot", "[ -rgb 21 22 23 ]. ( optional )", 0, false );
+        add_option( "ColorPrintable", "[ -rgb 30 31 32 ]. ( optional )", 0, false );
+        add_option( "Rainbow", "[ -rgb 33 13 10 ]. ( optional )", 0, false );
+        add_option( "AFMHot", "[ -rgb 34 35 36 ]. ( optional )", 0, false );
+        add_option( "Jet", "[ -rgb 37 38 39 ]. ( optional )", 0, false );
+        add_option( "Bone", "[ -rgb 40 41 42 ]. ( optional )\n", 0, false );
+
+        add_option( "rgb", "[int] Type of color map. ( optional )", 3, false );
+        add_option( "opacity", "[int] Type of opacity map. ( default : 3 )\n", 1, false );
+
+        add_option( "typeinfo", "Show type info of -rgb -opacity option.\n", 0, false );
+
+        if( !this->parse() ) exit( EXIT_FAILURE );
+    }
+};
+
+int main( int argc, char** argv )
+{
+    Argument arg( argc, argv );
+
+    if ( arg.hasOption( "typeinfo" ) )
+    {
         const char* help_message =
-            "[int] Type of opacity map. ( default : 3 )\n"
-            "\n"
             "<About Type of -rgb -opacity Option>\n"
             " 0 : 0.0\n"
             " 1 : 0.5\n"
@@ -127,34 +154,14 @@ public:
             "39 : x < 1.0/8 ? 4.0 * x + 0.5 : x < 3.0/8 ? 1.0 : x < 5.0/8 ? -4.0 * x + 2.5 : 0.0\n"
             "40 : x < 3.0/4 ? 7.0/8 * x : 11.0/8 * x - 3.0/8\n"
             "41 : x < 3.0/8 ? 7.0/8 * x : x < 3.0/4 ? 29.0/24 * x - 1.0/8 : 7.0/8 * x + 1.0/8\n"
-            "42 : x < 3.0/8 ? 29.0/24 * x : 7.0/8 * x + 1.0/8\n";
+            "42 : x < 3.0/8 ? 29.0/24 * x : 7.0/8 * x + 1.0/8";
 
-        add_value( "Output file name. ( e.g. tfunc.kvsml )", true );
+        std::cout << help_message << std::endl;
 
-        add_option( "resolution", "[size_t] Resolution of transfer function. ( default : 256 )", 1, false );
-
-        add_option( "PM3D", "[ -rgb 7 5 15 ]. ( optional )", 0, false );
-        add_option( "GreenRedViolet", "[ -rgb 3 11 6 ]. ( optional )", 0, false );
-        add_option( "Ocean", "[ -rgb 23 28 3 ]. ( optional )", 0, false );
-        add_option( "Hot", "[ -rgb 21 22 23 ]. ( optional )", 0, false );
-        add_option( "ColorPrintable", "[ -rgb 30 31 32 ]. ( optional )", 0, false );
-        add_option( "Rainbow", "[ -rgb 33 13 10 ]. ( optional )", 0, false );
-        add_option( "AFMHot", "[ -rgb 34 35 36 ]. ( optional )", 0, false );
-        add_option( "Jet", "[ -rgb 37 38 39 ]. ( optional )", 0, false );
-        add_option( "Bone", "[ -rgb 40 41 42 ]. ( optional )", 0, false );
-
-        add_option( "rgb", "[int] Type of color map. ( optional )", 3, false );
-        add_option( "opacity", help_message, 1, false );
-
-        if( !this->parse() ) exit( EXIT_FAILURE );
+        return( 0 );
     }
-};
 
-int main( int argc, char** argv )
-{
-    Argument arg( argc, argv );
-
-    const std::string filename = arg.value<std::string>();
+    const std::string filename = arg.hasOption( "file" ) ? arg.optionValue<std::string>( "file" ) : "tfunc.kvsml";
     const size_t resolution = arg.hasOption( "resolution" ) ? arg.optionValue<size_t>( "resolution" ) : 256;
 
     kvs::ColorMap color_map( resolution );
