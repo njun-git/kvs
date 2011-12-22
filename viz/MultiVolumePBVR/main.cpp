@@ -12,14 +12,21 @@
 #include <kvs/CommandLine>
 #include <kvs/UnstructuredVolumeImporter>
 #include <kvs/UnstructuredVectorToScalar>
+#include <kvs/PointImporter>
+#include <kvs/PolygonImporter>
 
 #include <kvs/Time>
+#include <kvs/Timer>
 #include <kvs/Bmp>
 #include <kvs/Camera>
 #include <kvs/RGBFormulae>
 
 #include <kvs/CellByCellMetropolisSampling>
-#include <kvs/glew/ParticleVolumeRenderer>
+#include "PolygonToParticle.h"
+
+#include "NullObject.h"
+#include "StochasticRenderer.h"
+#include "StochasticPointRenderer.h"
 
 #include "XformManager.h"
 
@@ -37,6 +44,10 @@ public:
         add_option( "volume1", "[string] kvs::UnstructuredVolumeObject file path. ( optional )", 1, false );
         add_option( "volume2", "[string] kvs::UnstructuredVolumeObject file path. ( optional )", 1, false );
 
+        add_option( "point", "[string] kvs::PointObject file path. ( optional )", 1, false );
+        add_option( "polygon", "[string] kvs::PolygonObject file path. ( optional )", 1, false );
+        add_option( "np", "[size_t] Number of particles. ( default : 100000 )", 1, false );
+
         add_option( "e", "[float]  Edge size of volume. ( default : 1 )", 1, false );
         add_option( "DisableShading", "Disable shading. ( default : eable shading )", 0, false );
 
@@ -53,6 +64,11 @@ class KeyPressEvent : public kvs::KeyPressEventListener
         {
             case kvs::Key::o: screen()->controlTarget() = kvs::ScreenBase::TargetObject; break;
             case kvs::Key::l: screen()->controlTarget() = kvs::ScreenBase::TargetLight; break;
+            case kvs::Key::f:
+            {
+                const kvs::RendererBase* r = screen()->rendererManager()->renderer();
+                std::cout << r->timer().msec() << std::endl; break;
+            }
             case kvs::Key::s:
             {
                 kvs::Time now; now.now();
@@ -110,18 +126,31 @@ int main( int argc, char** argv )
     const size_t repeat_level = arg.hasOption( "r" ) ? arg.optionValue<size_t>( "r" ) : 1;
     const size_t subpixel_level = static_cast<size_t>( sqrtf( float( repeat_level ) ) );
     const float sampling_step = arg.hasOption( "e" ) ? arg.optionValue<float>( "e" ) : 1.0f;
-    kvs::PointObject* point = new kvs::PointObject();
+
+    kvs::glew::StochasticRenderer* renderer = new kvs::glew::StochasticRenderer( repeat_level );
+    renderer->enableLODControl();
+
+    kvs::NullObject* null = new kvs::NullObject();
 
     if ( arg.hasOption( "volume1" ) )
     {
         const std::string filename = arg.optionValue<std::string>( "volume1" );
         kvs::UnstructuredVolumeObject* volume = new kvs::UnstructuredVolumeImporter( filename );
         kvs::TransferFunction tfunc;
-        kvs::PointObject* p = new kvs::CellByCellMetropolisSampling( volume, subpixel_level, sampling_step, tfunc );
+
+        kvs::Timer timer; timer.start();
+        kvs::PointObject* point = new kvs::CellByCellMetropolisSampling( volume, subpixel_level, sampling_step, tfunc );
+        timer.stop();
+        std::cout << "Generated point is ..." << std::endl;
+        std::cout << *point << std::endl;
+        std::cout << "Generation time of volume1 is " << timer.msec() << " [msec]" << std::endl;
         delete volume;
-        point->add( *p );
-        point->updateMinMaxCoords();
-        delete p;
+        null->update( point );
+
+        kvs::glew::StochasticPointRenderer* point_renderer = new kvs::glew::StochasticPointRenderer( point, repeat_level );
+        if ( arg.hasOption( "DisableShading" ) ) point_renderer->disableShading();
+
+        renderer->registerRenderer( point_renderer );
     }
 
     if ( arg.hasOption( "volume2" ) )
@@ -130,16 +159,54 @@ int main( int argc, char** argv )
         kvs::UnstructuredVolumeObject* volume = new kvs::UnstructuredVolumeImporter( filename );
         kvs::TransferFunction tfunc;
         tfunc.setColorMap( kvs::RGBFormulae::PM3D( 256 ) );
-        kvs::PointObject* p = new kvs::CellByCellMetropolisSampling( volume, subpixel_level, sampling_step, tfunc );
+
+        kvs::Timer timer; timer.start();
+        kvs::PointObject* point = new kvs::CellByCellMetropolisSampling( volume, subpixel_level, sampling_step, tfunc );
+        timer.stop();
+        std::cout << "Generated point is ..." << std::endl;
+        std::cout << *point << std::endl;
+        std::cout << "Generation time of volume2 is " << timer.msec() << " [msec]" << std::endl;
         delete volume;
-        point->add( *p );
-        delete p;
+        null->update( point );
+
+        kvs::glew::StochasticPointRenderer* point_renderer = new kvs::glew::StochasticPointRenderer( point, repeat_level );
+        if ( arg.hasOption( "DisableShading" ) ) point_renderer->disableShading();
+
+        renderer->registerRenderer( point_renderer );
     }
 
-    kvs::glew::ParticleVolumeRenderer* renderer = new kvs::glew::ParticleVolumeRenderer( point, 1, subpixel_level * repeat_level );
-    renderer->enableLODControl();
-    renderer->disableShading();
-    screen.registerObject( point, renderer );
+    if ( arg.hasOption( "point" ) )
+    {
+        const std::string filename = arg.optionValue<std::string>( "point" );
+        kvs::PointObject* point = new kvs::PointImporter( filename );
+        null->update( point );
+
+        kvs::glew::StochasticPointRenderer* point_renderer = new kvs::glew::StochasticPointRenderer( point, repeat_level );
+
+        renderer->registerRenderer( point_renderer );
+    }
+
+    if ( arg.hasOption( "polygon" ) )
+    {
+        const std::string filename = arg.optionValue<std::string>( "polygon" );
+        const size_t np = arg.hasOption( "np" ) ? arg.optionValue<size_t>( "np" ) : 100000;
+        kvs::PolygonObject* polygon = new kvs::PolygonImporter( filename );
+
+        kvs::Timer timer; timer.start();
+        kvs::PointObject* point = new kvs::PolygonToParticle( polygon, np );
+        timer.stop();
+        std::cout << "Generated point is ..." << std::endl;
+        std::cout << *point << std::endl;
+        std::cout << "Generation time of polygon is " << timer.msec() << " [msec]" << std::endl;
+        delete polygon;
+        null->update( point );
+
+        kvs::glew::StochasticPointRenderer* point_renderer = new kvs::glew::StochasticPointRenderer( point, repeat_level );
+
+        renderer->registerRenderer( point_renderer );
+    }
+
+    screen.registerObject( null, renderer );
 
     return( app.run() );
 }
