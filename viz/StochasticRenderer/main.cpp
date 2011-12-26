@@ -162,7 +162,7 @@ int main( int argc, char** argv )
         kvs::PolygonObject* polygon = new kvs::PolygonToPolygon( import_polygon );
         delete import_polygon;
 
-        const float opacity = arg.hasOption( "o" ) ? arg.optionValue( "o" ) : 0.25f;
+        const float opacity = arg.hasOption( "o" ) ? arg.optionValue<float>( "o" ) : 0.25f;
         polygon->setOpacity( static_cast<unsigned char>( opacity * 255.0f ) );
 
         if ( arg.hasOption( "PolygonWhite" ) ) polygon->setColor( kvs::RGBColor( 255, 255, 255 ) );
@@ -180,7 +180,7 @@ int main( int argc, char** argv )
 
         kvs::glew::StochasticLineRenderer* line_renderer = new kvs::glew::StochasticLineRenderer( line );
 
-        const float opacity = arg.hasOption( "o" ) ? arg.optionValue( "o" ) : 0.25f;
+        const float opacity = arg.hasOption( "o" ) ? arg.optionValue<float>( "o" ) : 0.25f;
         line_renderer->setOpacity( static_cast<unsigned char>( opacity * 255.0f ) );
 
         renderer->registerRenderer( line_renderer );
