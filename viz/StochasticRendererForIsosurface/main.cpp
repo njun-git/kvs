@@ -49,7 +49,10 @@ public:
         add_option( "line", "[string] kvs::LineObject file path. ( optional )", 1, false );
         add_option( "tfunc", "[string] kvs::TransferFunction file path. ( optional )", 1, false );
 
+        add_option( "o", "[float]  Opacity of geometry. ( default : 0.25 )", 1, false );
         add_option( "e", "[float]  Edge size of volume. ( default : 1 )", 1, false );
+        add_option( "iso", "[float]  Iso-value for extracting isosurface. ( default : 0.5 )", 1, false );
+        add_option( "PolygonWhite", "Set polygon color to white. ( optional )", 0, false );
         add_option( "DisableShading", "Disable shading. ( default : eable shading )", 0, false );
 
         if( !this->parse() ) exit( EXIT_FAILURE );
@@ -128,7 +131,7 @@ int main( int argc, char** argv )
     kvs::glew::StochasticRenderer* renderer = new kvs::glew::StochasticRenderer( repeat_level );
     renderer->enableLODControl();
 
-    kvs::NullObject* null = NULL;
+    kvs::NullObject* null = new kvs::NullObject();
 
     if ( arg.hasOption( "volume" ) )
     {
@@ -152,10 +155,11 @@ int main( int argc, char** argv )
             volume_renderer->setTransferFunction( tfunc );
         }
         renderer->registerRenderer( volume_renderer );
-        if ( !null ) null = new kvs::NullObject( volume );
+        null->update( volume );
 
         // Isosurface.
-        const float iso_value = 0.5f * ( volume->maxValue() - volume->minValue() ) + volume->minValue();
+        const float iso_level = arg.hasOption( "iso" ) ? arg.optionValue( "iso" ) : 0.5f;
+        const float iso_value = iso_level * ( volume->maxValue() - volume->minValue() ) + volume->minValue();
         kvs::PolygonObject* iso = new kvs::Isosurface( volume, iso_value );
         kvs::PolygonObject* polygon = new kvs::PolygonToPolygon( iso );
         delete iso;
@@ -173,13 +177,16 @@ int main( int argc, char** argv )
         kvs::PolygonObject* polygon = new kvs::PolygonToPolygon( import_polygon );
         delete import_polygon;
 
-        polygon->setOpacity( 64 );
+        const float opacity = arg.hasOption( "o" ) ? arg.optionValue( "o" ) : 0.25f;
+        polygon->setOpacity( static_cast<unsigned char>( opacity * 255.0f ) );
+
+        if ( arg.hasOption( "PolygonWhite" ) ) polygon->setColor( kvs::RGBColor( 255, 255, 255 ) );
 
         kvs::glew::StochasticPolygonRenderer* polygon_renderer = new kvs::glew::StochasticPolygonRenderer( polygon );
         polygon_renderer->setShader( kvs::Shader::BlinnPhong() );
 
         renderer->registerRenderer( polygon_renderer );
-        if ( !null ) null = new kvs::NullObject( polygon );
+        null->update( polygon );
     }
 
     if ( arg.hasOption( "line" ) )
@@ -187,10 +194,11 @@ int main( int argc, char** argv )
         kvs::LineObject* line = new kvs::LineImporter( arg.optionValue<std::string>( "line" ) );
 
         kvs::glew::StochasticLineRenderer* line_renderer = new kvs::glew::StochasticLineRenderer( line );
-        line_renderer->setOpacity( 64 );
+        const float opacity = arg.hasOption( "o" ) ? arg.optionValue( "o" ) : 0.25f;
+        line_renderer->setOpacity( static_cast<unsigned char>( opacity * 255.0f ) );
 
         renderer->registerRenderer( line_renderer );
-        if ( !null ) null = new kvs::NullObject( line );
+        null->update( line );
     }
 
     if ( arg.hasOption( "point" ) )
@@ -201,10 +209,10 @@ int main( int argc, char** argv )
         point_renderer->setShader( kvs::Shader::BlinnPhong() );
 
         renderer->registerRenderer( point_renderer );
-        if ( !null ) null = new kvs::NullObject( point );
+        null->update( point );
     }
 
-    if ( null ) screen.registerObject( null, renderer );
+    screen.registerObject( null, renderer );
 
     return( app.run() );
 }

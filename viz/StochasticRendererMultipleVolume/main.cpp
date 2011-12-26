@@ -124,7 +124,7 @@ int main( int argc, char** argv )
     kvs::glew::StochasticRenderer* renderer = new kvs::glew::StochasticRenderer( repeat_level );
     renderer->enableLODControl();
 
-    kvs::NullObject* null = NULL;
+    kvs::NullObject* null = new kvs::NullObject();
     kvs::UnstructuredVolumeObject* volume1 = NULL;
     kvs::UnstructuredVolumeObject* volume2 = NULL;
 
@@ -139,7 +139,7 @@ int main( int argc, char** argv )
             volume1 = volume_s;
         }
 
-        if ( !null ) null = new kvs::NullObject( volume1 );
+        null->update( volume1 );
     }
 
     if ( arg.hasOption( "volume2" ) )
@@ -153,8 +153,7 @@ int main( int argc, char** argv )
             volume2 = volume_s;
         }
 
-        if ( !null ) null = new kvs::NullObject( volume2 );
-        else         null->update( volume2 );
+        null->update( volume2 );
     }
 
     if ( volume1 && volume2 )
@@ -189,10 +188,9 @@ int main( int argc, char** argv )
     {
         if ( volume1 ) { delete volume1; volume1 = NULL; }
         if ( volume2 ) { delete volume2; volume2 = NULL; }
-        if ( null ) { delete null; null = NULL; }
     }
 
-    if ( null ) screen.registerObject( null, renderer );
+    screen.registerObject( null, renderer );
 
     return( app.run() );
 }

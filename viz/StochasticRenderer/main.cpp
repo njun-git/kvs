@@ -129,7 +129,7 @@ int main( int argc, char** argv )
     kvs::glew::StochasticRenderer* renderer = new kvs::glew::StochasticRenderer( repeat_level );
     renderer->enableLODControl();
 
-    kvs::NullObject* null = NULL;
+    kvs::NullObject* null = new kvs::NullObject();
 
     if ( arg.hasOption( "volume" ) )
     {
@@ -153,7 +153,7 @@ int main( int argc, char** argv )
             volume_renderer->setTransferFunction( tfunc );
         }
         renderer->registerRenderer( volume_renderer );
-        if ( !null ) null = new kvs::NullObject( volume );
+        null->update( volume );
     }
 
     if ( arg.hasOption( "polygon" ) )
@@ -171,7 +171,7 @@ int main( int argc, char** argv )
         polygon_renderer->setShader( kvs::Shader::BlinnPhong() );
 
         renderer->registerRenderer( polygon_renderer );
-        if ( !null ) null = new kvs::NullObject( polygon );
+        null->update( polygon );
     }
 
     if ( arg.hasOption( "line" ) )
@@ -184,7 +184,7 @@ int main( int argc, char** argv )
         line_renderer->setOpacity( static_cast<unsigned char>( opacity * 255.0f ) );
 
         renderer->registerRenderer( line_renderer );
-        if ( !null ) null = new kvs::NullObject( line );
+        null->update( line );
     }
 
     if ( arg.hasOption( "point" ) )
@@ -195,10 +195,10 @@ int main( int argc, char** argv )
         point_renderer->setShader( kvs::Shader::BlinnPhong() );
 
         renderer->registerRenderer( point_renderer );
-        if ( !null ) null = new kvs::NullObject( point );
+        null->update( point );
     }
 
-    if ( null ) screen.registerObject( null, renderer );
+    screen.registerObject( null, renderer );
 
     return( app.run() );
 }
