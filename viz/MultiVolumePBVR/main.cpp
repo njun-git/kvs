@@ -45,7 +45,8 @@ public:
         add_option( "volume2", "[string] kvs::UnstructuredVolumeObject file path. ( optional )", 1, false );
 
         add_option( "point", "[string] kvs::PointObject file path. ( optional )", 1, false );
-        add_option( "polygon", "[string] kvs::PolygonObject file path. ( optional )", 1, false );
+        add_option( "polygon1", "[string] kvs::PolygonObject file path. ( optional )", 1, false );
+        add_option( "polygon2", "[string] kvs::PolygonObject file path. ( optional )", 1, false );
         add_option( "np", "[size_t] Number of particles. ( default : 100000 )", 1, false );
 
         add_option( "e", "[float]  Edge size of volume. ( default : 1 )", 1, false );
@@ -186,9 +187,29 @@ int main( int argc, char** argv )
         renderer->registerRenderer( point_renderer );
     }
 
-    if ( arg.hasOption( "polygon" ) )
+    if ( arg.hasOption( "polygon1" ) )
     {
-        const std::string filename = arg.optionValue<std::string>( "polygon" );
+        const std::string filename = arg.optionValue<std::string>( "polygon1" );
+        const size_t np = arg.hasOption( "np" ) ? arg.optionValue<size_t>( "np" ) : 100000;
+        kvs::PolygonObject* polygon = new kvs::PolygonImporter( filename );
+
+        kvs::Timer timer; timer.start();
+        kvs::PointObject* point = new kvs::PolygonToParticle( polygon, np );
+        timer.stop();
+        std::cout << "Generated point is ..." << std::endl;
+        std::cout << *point << std::endl;
+        std::cout << "Generation time of polygon is " << timer.msec() << " [msec]" << std::endl;
+        delete polygon;
+        null->update( point );
+
+        kvs::glew::StochasticPointRenderer* point_renderer = new kvs::glew::StochasticPointRenderer( point, repeat_level );
+
+        renderer->registerRenderer( point_renderer );
+    }
+
+    if ( arg.hasOption( "polygon2" ) )
+    {
+        const std::string filename = arg.optionValue<std::string>( "polygon2" );
         const size_t np = arg.hasOption( "np" ) ? arg.optionValue<size_t>( "np" ) : 100000;
         kvs::PolygonObject* polygon = new kvs::PolygonImporter( filename );
 

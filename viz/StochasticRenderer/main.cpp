@@ -16,6 +16,11 @@
 #include <kvs/LineImporter>
 #include <kvs/PointImporter>
 
+#include <kvs/Time>
+#include <kvs/Bmp>
+#include <kvs/Camera>
+#include <kvs/RGBFormulae>
+
 #include "NullObject.h"
 #include "StochasticRenderer.h"
 #include "StochasticVolumeRenderer.h"
@@ -24,6 +29,7 @@
 #include "StochasticPointRenderer.h"
 
 #include "PolygonToPolygon.h"
+#include "XformManager.h"
 
 class Argument : public kvs::CommandLine
 {
@@ -42,7 +48,9 @@ public:
         add_option( "line", "[string] kvs::LineObject file path. ( optional )", 1, false );
         add_option( "tfunc", "[string] kvs::TransferFunction file path. ( optional )", 1, false );
 
+        add_option( "o", "[float]  Opacity of geometry. ( default : 0.25 )", 1, false );
         add_option( "e", "[float]  Edge size of volume. ( default : 1 )", 1, false );
+        add_option( "PolygonWhite", "Set polygon color to white. ( optional )", 0, false );
         add_option( "DisableShading", "Disable shading. ( default : eable shading )", 0, false );
 
         if( !this->parse() ) exit( EXIT_FAILURE );
@@ -61,7 +69,44 @@ class KeyPressEvent : public kvs::KeyPressEventListener
             case kvs::Key::f:
             {
                 const kvs::RendererBase* r = screen()->rendererManager()->renderer();
-                std::cout << r->timer().msec() << std::endl; break;
+                std::cout << "Rendering time : " << r->timer().msec() << " [msec]" << std::endl; break;
+            }
+            case kvs::Key::s:
+            {
+                kvs::Time now; now.now();
+                std::string filename( std::string( "ScreenShot_" ) + now.toString( "" ) + std::string( ".bmp" ) );
+                kvs::Camera camera;
+                kvs::ColorImage screen_shot = camera.snapshot();
+
+                kvs::Bmp* bmp = new kvs::Bmp( screen_shot.width(), screen_shot.height(), screen_shot.data() );
+                if ( bmp->write( filename ) )
+                {
+                    std::cout << "Write screen shot to " << filename << std::endl;
+                }
+                else
+                {
+                    kvsMessageError( "Cannot write image." );
+                }
+                delete bmp;
+                break;
+            }
+            case kvs::Key::x:
+            {
+                kvs::XformManager manager( screen() );
+                if ( manager.saveXform( "xform.dat" ) )
+                {
+                    std::cout << "Write current xform to xform.dat" <<std::endl;
+                }
+                break;
+            }
+            case kvs::Key::X:
+            {
+                kvs::XformManager manager( screen() );
+                if ( manager.applyXform( "xform.dat" ) )
+                {
+                    std::cout << "Apply saved xform to xform.dat" <<std::endl;
+                }
+                break;
             }
             default: break;
         }
@@ -117,7 +162,10 @@ int main( int argc, char** argv )
         kvs::PolygonObject* polygon = new kvs::PolygonToPolygon( import_polygon );
         delete import_polygon;
 
-        polygon->setOpacity( 64 );
+        const float opacity = arg.hasOption( "o" ) ? arg.optionValue( "o" ) : 0.25f;
+        polygon->setOpacity( static_cast<unsigned char>( opacity * 255.0f ) );
+
+        if ( arg.hasOption( "PolygonWhite" ) ) polygon->setColor( kvs::RGBColor( 255, 255, 255 ) );
 
         kvs::glew::StochasticPolygonRenderer* polygon_renderer = new kvs::glew::StochasticPolygonRenderer( polygon );
         polygon_renderer->setShader( kvs::Shader::BlinnPhong() );
@@ -131,7 +179,9 @@ int main( int argc, char** argv )
         kvs::LineObject* line = new kvs::LineImporter( arg.optionValue<std::string>( "line" ) );
 
         kvs::glew::StochasticLineRenderer* line_renderer = new kvs::glew::StochasticLineRenderer( line );
-        line_renderer->setOpacity( 64 );
+
+        const float opacity = arg.hasOption( "o" ) ? arg.optionValue( "o" ) : 0.25f;
+        line_renderer->setOpacity( static_cast<unsigned char>( opacity * 255.0f ) );
 
         renderer->registerRenderer( line_renderer );
         if ( !null ) null = new kvs::NullObject( line );

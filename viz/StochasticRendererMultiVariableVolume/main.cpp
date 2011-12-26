@@ -31,6 +31,7 @@
 #include "StochasticPointRenderer.h"
 
 #include "PolygonToPolygon.h"
+#include "XformManager.h"
 
 class Argument : public kvs::CommandLine
 {
@@ -103,7 +104,7 @@ class KeyPressEvent : public kvs::KeyPressEventListener
             case kvs::Key::f:
             {
                 const kvs::RendererBase* r = screen()->rendererManager()->renderer();
-                std::cout << r->timer().msec() << std::endl; break;
+                std::cout << "Rendering time : " << r->timer().msec() << " [msec]" << std::endl; break;
             }
             case kvs::Key::s:
             {
@@ -163,6 +164,24 @@ class KeyPressEvent : public kvs::KeyPressEventListener
                         volume2_renderer->show( 1 );
                     }
                     renderer->clearEnsembleBuffer();
+                }
+                break;
+            }
+            case kvs::Key::x:
+            {
+                kvs::XformManager manager( screen() );
+                if ( manager.saveXform( "xform.dat" ) )
+                {
+                    std::cout << "Write current xform to xform.dat" <<std::endl;
+                }
+                break;
+            }
+            case kvs::Key::X:
+            {
+                kvs::XformManager manager( screen() );
+                if ( manager.applyXform( "xform.dat" ) )
+                {
+                    std::cout << "Apply saved xform to xform.dat" <<std::endl;
                 }
                 break;
             }

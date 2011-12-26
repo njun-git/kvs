@@ -17,6 +17,11 @@
 #include <kvs/PointImporter>
 #include <kvs/Isosurface>
 
+#include <kvs/Time>
+#include <kvs/Bmp>
+#include <kvs/Camera>
+#include <kvs/RGBFormulae>
+
 #include "NullObject.h"
 #include "StochasticRenderer.h"
 #include "StochasticVolumeRenderer.h"
@@ -25,6 +30,7 @@
 #include "StochasticPointRenderer.h"
 
 #include "PolygonToPolygon.h"
+#include "XformManager.h"
 
 class Argument : public kvs::CommandLine
 {
@@ -59,6 +65,48 @@ class KeyPressEvent : public kvs::KeyPressEventListener
         {
             case kvs::Key::o: screen()->controlTarget() = kvs::ScreenBase::TargetObject; break;
             case kvs::Key::l: screen()->controlTarget() = kvs::ScreenBase::TargetLight; break;
+            case kvs::Key::f:
+            {
+                const kvs::RendererBase* r = screen()->rendererManager()->renderer();
+                std::cout << "Rendering time : " << r->timer().msec() << " [msec]" << std::endl; break;
+            }
+            case kvs::Key::s:
+            {
+                kvs::Time now; now.now();
+                std::string filename( std::string( "ScreenShot_" ) + now.toString( "" ) + std::string( ".bmp" ) );
+                kvs::Camera camera;
+                kvs::ColorImage screen_shot = camera.snapshot();
+
+                kvs::Bmp* bmp = new kvs::Bmp( screen_shot.width(), screen_shot.height(), screen_shot.data() );
+                if ( bmp->write( filename ) )
+                {
+                    std::cout << "Write screen shot to " << filename << std::endl;
+                }
+                else
+                {
+                    kvsMessageError( "Cannot write image." );
+                }
+                delete bmp;
+                break;
+            }
+            case kvs::Key::x:
+            {
+                kvs::XformManager manager( screen() );
+                if ( manager.saveXform( "xform.dat" ) )
+                {
+                    std::cout << "Write current xform to xform.dat" <<std::endl;
+                }
+                break;
+            }
+            case kvs::Key::X:
+            {
+                kvs::XformManager manager( screen() );
+                if ( manager.applyXform( "xform.dat" ) )
+                {
+                    std::cout << "Apply saved xform to xform.dat" <<std::endl;
+                }
+                break;
+            }
             default: break;
         }
     }

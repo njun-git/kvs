@@ -64,7 +64,7 @@ class KeyPressEvent : public kvs::KeyPressEventListener
             case kvs::Key::f:
             {
                 const kvs::RendererBase* r = screen()->rendererManager()->renderer();
-                std::cout << r->timer().msec() << std::endl; break;
+                std::cout << "Rendering time : " << r->timer().msec() << " [msec]" << std::endl; break;
             }
             case kvs::Key::s:
             {
