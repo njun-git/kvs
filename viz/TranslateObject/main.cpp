@@ -24,7 +24,8 @@ public:
     {
         add_help_option();
 
-        add_option( "t", "[float] kvs::Vector3f. ( default : 1.0 1.0 1.0 )", 3, false );
+        add_option( "t", "[float] Translation vector. ( default : 1.0 1.0 1.0 )", 3, false );
+        add_option( "s", "[float] Scaling. ( default : 1.0 )", 1, false );
 
         add_option( "volume", "[string] kvs::UnstructuredVolumeObject file path. ( optional )", 1, false );
         add_option( "polygon", "[string] kvs::PolygonObject file path. ( optional )", 1, false );
@@ -37,16 +38,17 @@ public:
 
 kvs::ValueArray<float> TranslatedCoordinates(
     const kvs::ValueArray<float>& coords,
-    const kvs::Vector3f translation )
+    const kvs::Vector3f translation,
+    const float scaling )
 {
     const size_t nvertices = coords.size() / 3;
     kvs::ValueArray<float> t_coords( nvertices * 3 );
 
     for ( size_t i = 0; i < nvertices; i++ )
     {
-        t_coords[ i * 3     ] = coords[ i * 3     ] + translation.x();
-        t_coords[ i * 3 + 1 ] = coords[ i * 3 + 1 ] + translation.y();
-        t_coords[ i * 3 + 2 ] = coords[ i * 3 + 2 ] + translation.z();
+        t_coords[ i * 3     ] = scaling * coords[ i * 3     ] + translation.x();
+        t_coords[ i * 3 + 1 ] = scaling * coords[ i * 3 + 1 ] + translation.y();
+        t_coords[ i * 3 + 2 ] = scaling * coords[ i * 3 + 2 ] + translation.z();
     }
 
     return( t_coords );
@@ -60,6 +62,7 @@ int main( int argc, char** argv )
     const kvs::Vector3f translation = arg.hasOption( "t" ) ?
         kvs::Vector3f( arg.optionValue<float>( "t", 0 ), arg.optionValue<float>( "t", 1 ), arg.optionValue<float>( "t", 2 ) ) :
         kvs::Vector3f( 1.0f, 1.0f, 1.0f );
+    const float scaling = arg.hasOption( "s" ) ? arg.optionValue<float>( "s" ) : 1.0f;
 
     if ( arg.hasOption( "volume" ) )
     {
@@ -71,7 +74,7 @@ int main( int argc, char** argv )
             return( 1 );
         }
 
-        volume->setCoords( TranslatedCoordinates( volume->coords(), translation ) );
+        volume->setCoords( TranslatedCoordinates( volume->coords(), translation, scaling ) );
 
         kvs::KVSMLObjectUnstructuredVolume* kvsml = new kvs::UnstructuredVolumeExporter<kvs::KVSMLObjectUnstructuredVolume>( volume );
         kvsml->setWritingDataType( kvs::KVSMLObjectUnstructuredVolume::ExternalBinary );
@@ -92,7 +95,7 @@ int main( int argc, char** argv )
             return( 1 );
         }
 
-        polygon->setCoords( TranslatedCoordinates( polygon->coords(), translation ) );
+        polygon->setCoords( TranslatedCoordinates( polygon->coords(), translation, scaling ) );
 
         kvs::KVSMLObjectPolygon* kvsml = new kvs::PolygonExporter<kvs::KVSMLObjectPolygon>( polygon );
         kvsml->setWritingDataType( kvs::KVSMLObjectPolygon::ExternalBinary );
