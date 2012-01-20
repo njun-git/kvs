@@ -26,6 +26,10 @@ class NullObject : public kvs::ObjectBase
     kvsModuleCategory( Object );
     kvsModuleBaseClass( kvs::ObjectBase );
 
+protected:
+
+    bool    m_has_min_max_coords;
+
 public:
 
     NullObject( void );

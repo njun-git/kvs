@@ -52,7 +52,8 @@ class NewUser : public kvs::ni::NewUserEventListener
     {
         std::cout << "# of users : " << g_user.nusers() << ", new user : " << user << std::endl;
 
-        g_user.pose().startDetection( "Psi", user );
+        //g_user.pose().startDetection( "Psi", user );
+        g_user.skeleton().requestCalibration( user, true );
     }
 };
 
@@ -61,8 +62,8 @@ class PoseDetected : public kvs::ni::PoseStartEventListener
     void update( const std::string& pose, const unsigned int user )
     {
         std::cout << pose << " pose detected : " << user << std::endl;
-        g_user.pose().stopDetection( user );
-        g_user.skeleton().requestCalibration( user, true );
+        //g_user.pose().stopDetection( user );
+        //g_user.skeleton().requestCalibration( user, true );
     }
 };
 

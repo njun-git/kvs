@@ -15,6 +15,7 @@
 #include <kvs/PolygonImporter>
 #include <kvs/LineImporter>
 #include <kvs/PointImporter>
+#include <kvs/Isosurface>
 
 #include <kvs/Time>
 #include <kvs/Bmp>
@@ -50,6 +51,7 @@ public:
 
         add_option( "o", "[float]  Opacity of geometry. ( default : 0.25 )", 1, false );
         add_option( "e", "[float]  Edge size of volume. ( default : 1 )", 1, false );
+        add_option( "iso", "[float]  Iso-value for extracting isosurface. ( optinal 0 <= iso <= 1 )", 1, false );
         add_option( "PolygonWhite", "Set polygon color to white. ( optional )", 0, false );
         add_option( "DisableShading", "Disable shading. ( default : eable shading )", 0, false );
 
@@ -153,6 +155,22 @@ int main( int argc, char** argv )
             volume_renderer->setTransferFunction( tfunc );
         }
         renderer->registerRenderer( volume_renderer );
+
+        if ( arg.hasOption( "iso" ) )
+        {
+            const float iso_level = arg.optionValue<float>( "iso" );
+            const float iso_value = iso_level * ( volume->maxValue() - volume->minValue() ) + volume->minValue();
+            kvs::PolygonObject* iso = new kvs::Isosurface( volume, iso_value );
+            kvs::PolygonObject* polygon = new kvs::PolygonToPolygon( iso );
+            delete iso;
+
+            kvs::glew::StochasticPolygonRenderer* polygon_renderer = new kvs::glew::StochasticPolygonRenderer( polygon );
+            polygon_renderer->setShader( kvs::Shader::BlinnPhong() );
+            if ( arg.hasOption( "DisableShading" ) ) polygon_renderer->disableShading();
+
+            renderer->registerRenderer( polygon_renderer );
+        }
+
         null->update( volume );
     }
 
