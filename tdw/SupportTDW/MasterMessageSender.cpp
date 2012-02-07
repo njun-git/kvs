@@ -54,7 +54,8 @@ void MasterMessageSender::sendMessage( const kvs::MessageBlock& message )
     m_mutex.unlock();
     if ( is_rendering && kvs::tdw::Configuration::IsSync() )
     {
-        this->stackMessage( message );
+        this->send_message( message, true );
+        //this->stackMessage( message );
     }
     else
     {
@@ -94,7 +95,8 @@ void MasterMessageSender::sendPaintEvent( kvs::ScreenBase* screen )
     m_mutex.unlock();
     if ( is_rendering && kvs::tdw::Configuration::IsSync() )
     {
-        this->stackMessage( converter.paintEventMessage( screen ) );
+        this->sendMessage( converter.paintEventMessage( screen ) );
+        //this->stackMessage( converter.paintEventMessage( screen ) );
     }
     else
     {
@@ -110,7 +112,8 @@ void MasterMessageSender::sendKeyEvent( kvs::KeyEvent* event )
     m_mutex.unlock();
     if ( is_rendering && kvs::tdw::Configuration::IsSync() )
     {
-        this->stackMessage( converter.keyEventMessage( event ) );
+        this->sendMessage( converter.keyEventMessage( event ) );
+        //this->stackMessage( converter.keyEventMessage( event ) );
     }
     else
     {
@@ -126,7 +129,8 @@ void MasterMessageSender::sendTimerEvent( kvs::TimeEvent* event )
     m_mutex.unlock();
     if ( is_rendering && kvs::tdw::Configuration::IsSync() )
     {
-        this->stackMessage( converter.timerEventMessage( event ) );
+        this->sendMessage( converter.timerEventMessage( event ) );
+        //this->stackMessage( converter.timerEventMessage( event ) );
     }
     else
     {
